@@ -21,6 +21,7 @@ Mediafiles
 	NOTE
 		User must be signed in to view menu
 Channel (publicly available)
+	Owner
 	Subscribers
 	Mediafiles
 Messaging
@@ -34,9 +35,14 @@ Comments
 	Reference to parent
 Playlist
 	Mediafiles
+	Date
+	Name
+	Creator
 	FUNCTIONS
 		remove, delete, create
 Favorites
+	NOTES
+		this is basically a playlist
 
 Category
 
