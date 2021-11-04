@@ -1,8 +1,8 @@
 <?php
   
-$servername = "localhost";
-$username = MeTube_05su;
-$password = cpsc4620;
+$servername = "mysql1.cs.clemson.edu";
+$username = "MeTube_05su";
+$password = "cpsc4620";
 $dbname = "MeTube_e7b2";
   
 // Create connection
