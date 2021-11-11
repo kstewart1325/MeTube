@@ -6,7 +6,14 @@ function OpenCon()
     $password = "cpsc4620";
     $dbname = "MeTube_e7b2";
 
-    $conn = new mysqli($servername, $username, $password,$dbname) or die("Connect failed: %s\n". $conn -> error);
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    if ($conn->connect_error) {
+      die("Connection failed: " 
+          . $conn->connect_error);
+   } else {
+      echo "Connection established<br>";
+   }
  
     return $conn;
  }

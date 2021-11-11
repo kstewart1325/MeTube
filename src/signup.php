@@ -1,8 +1,10 @@
 <?php
 
+$path = "MeTube/src/";
+$url = "http://localhost:8070/";
+
 include 'db_connection.php';
 $conn = OpenCon();
-echo "Connected Successfully";
 
 if ($conn->connect_error) {
     die("Connection failed: " 
@@ -11,77 +13,73 @@ if ($conn->connect_error) {
     echo "Connection established<br>";
 }
 
-$firstname = "";
-$lastname = "";
-$username = "";
-$email = "";
-$birthday = "";
-$password = "";
+$resubmit = false;
+
+if($_SERVER['REQUEST_METHOD']=="POST"){
+    //check if values are empty, ask them to resubmit if not
+    $firstname = $_POST['first_name'];
+    $lastname = $_POST['last_name'];
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $birthday = $_POST['birthday'];
+    $password = $_POST['password'];
+
+    if(empty($firstname) || empty($lastname) || empty($username) || empty($email) || empty($birthday) || empty($password)){
+        echo "Some fields left blank. Please fill out entire form.<br>";
+        $resubmit = true;
+    }
+
+    //checks if username and/or email is in use
+    $sql = "SELECT username FROM User WHERE username LIKE " . $username . " LIMIT 0 , 30";
+    $result = $conn->query($sql);
+
+    $sql = "SELECT email FROM User WHERE email LIKE " . $email;
+    $result2 = $conn->query($sql);
+    
+    if($result === true || $result2 === true) {
+        $echo("Username or email already in use. Please choose another.<br>");
+        $resubmit = true;
+    }
+
+    // // adds info to "user" database if username and email available
+    // if($resubmit === false){
+    //     //calculates appropriate userid
+    //     $id = 0;
+    //     $sql = "SELECT MAX(userid) AS id FROM user";
+    //     $result = $conn->query($sql);
+    //     if($result->num_rows > 0) {
+    //         $row = $result->fetch_assoc();
+    //         $id = $row["id"] + 1;
+    //     }
+
+    //     $sql = "INSERT INTO user VALUES 
+    //     ('" . $id . "', '" . $firstname . "', '" . $lastname . "', '" . $username . 
+    //     "', '" . $email . "', 'CURRENT_TIMESTAMP', '" . $birthday . "', '" . $password . "')";
+    //     $result = $conn->query($sql);
+
+    //     if ($result === TRUE) {
+    //         $echo("record inserted successfully<br>");
+    //     } else {
+    //         $echo("Error: " . $sql . "<br>" . $conn->error);
+    //     }
+    // }
+
+    // $errorMessage = <<< EOPAGE
+    // <p></p>
+    // EOPAGE;
+
+    // echo $pageContents;
+} else {
+    echo "POST not submitted<br>";
+}
 
 CloseCon($conn);
 
-//checks if username and/or password already exists
-// $sqlquery = ""
-
-// if ($conn->query($sql) === TRUE) {
-//     $echo "record inserted successfully";
+//redirects to signup page if form must be resubmitted
+//else redirects to home page
+// if($resubmit === true){
+//     header('Location: ' . $url . $path . 'signup.html');
 // } else {
-//     $echo "Error: " . $sql . "<br>" . $conn->error;
+//     header('Location: ' . $url . $path . 'index.html');
 // }
-
-//adds info to "user" database if not already available
-// $sqlquery = "INSERT INTO table VALUES 
-// ('John', 'Doe', 'john@example.com')"
-
-// if ($conn->query($sql) === TRUE) {
-// $echo "record inserted successfully";
-// } else {
-// $echo "Error: " . $sql . "<br>" . $conn->error;
-// }
-
-// $pageContents = <<< EOPAGE
-// <!DOCTYPE html>
-// <html>
-// <<head>
-// <title>Sign-up</title>
-// </head>
-
-// <body>
-//     <form action="signup.php" method="post">
-//       <fieldset>
-//         <legend>MeTube Signup</legend>
-//         <p>
-//           <label for="first_name">First Name: </label>
-//           <input type="text" id="first_name" name="first_name" /><br />
-//         </p>
-//         <p>
-//           <label for="last_name">Last Name: </label>
-//           <input type="text" id="last_name" name="last_name" /><br />
-//         </p>
-//         <p>
-//           <label for="username">Username: </label>
-//           <input type="text" id="username" name="username" /><br />
-//         </p>
-//         <p>
-//           <label for="email">Email: </label>
-//           <input type="text" id="email" name="email" /><br />
-//         </p>
-//         <p>
-//           <label for="birthday">Date of Birth: </label>
-//           <input type="date" id="birthday" name="birthday" /><br />
-//         </p>
-//         <p>
-//           <label for="password">Password: </label>
-//           <input type="text" id="name" name="name" /><br />
-//         </p>
-//         <!-- user id -->
-//         <!-- signup date -->
-//         <p><input type="submit" value="Send" /> <input type="reset" /></p>
-//       </fieldset>
-//     </form>
-//   </body>
-// EOPAGE;
-
-// echo $pageContents;
-
  ?>
