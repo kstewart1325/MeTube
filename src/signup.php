@@ -1,5 +1,12 @@
 <?php
 
+/*
+    POSSIBLE ISSUES:
+    - When checking email validity, it only checks that the email includes '@' and '.com',
+      but it doesn't check where in the string those are located
+    - Doesn't check for extra white space in form data before or after string
+*/
+
 $path = "MeTube/src/";
 $url = "http://localhost:8070/";
 
@@ -31,7 +38,7 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
     $sql2 = "SELECT email FROM Account WHERE email=\"$email\" LIMIT 0 , 30";
     $result2 = $conn->query($sql2);
 
-    //if username and/or email already in use
+    //checks if username and/or email already in use
     if($result->num_rows > 0 && $result2->num_rows > 0) {
         $error_message = "<br>Username and email already in use. Please choose another.<br>";
         $resubmit = true;
@@ -45,6 +52,12 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
 
     // adds info to 'Account' database if username and email available
     if($resubmit === false){
+        //checks if email is valid
+        if(strpos($email, "@") === false || strpos($email, ".com") === false){
+            $error_message = "<br>Invalid Email. Please choose another.<br>";
+            $resubmit = true;
+        }
+
         //calculates appropriate user_id
         $id = 0;
         $sql = "SELECT MAX(user_id) AS id FROM Account";
