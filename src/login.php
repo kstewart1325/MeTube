@@ -2,6 +2,8 @@
   
 $path = "MeTube/src/";
 $url = "http://localhost:8070/";
+
+if(!session_id()) session_start();
   
 include 'db_connection.php';
 $conn = OpenCon();
@@ -27,6 +29,7 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
 
         //checks if username and password match account an account
         if($result->num_rows > 0) {
+            $_SESSION['isLoggedIn'] = true;
             header('Location: '. $url . $path . 'index.html');
         } else {
             $error_message = "<br><br>Incorrect username or password. Please try again.<br>";
