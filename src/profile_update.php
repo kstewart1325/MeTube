@@ -36,7 +36,7 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
             first_name = \"$firstname\"
         WHERE 
             user_id = 3";
-        $result = $conn->query($sql);
+        $conn->query($sql);
     }
     if(!empty($lastname)){
         $sql = "UPDATE Account
@@ -44,7 +44,7 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
             last_name = \"$lastname\"
         WHERE 
             user_id = 3";
-        $result = $conn->query($sql);
+        $conn->query($sql);
     }
     if(!empty($username)){
         $sql = "UPDATE Account
@@ -52,7 +52,7 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
             username = \"$username\"
         WHERE 
             user_id = 3";
-        $result = $conn->query($sql);
+        $conn->query($sql);
     }
     if(!empty($email)){
         $sql = "UPDATE Account
@@ -60,7 +60,7 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
             email = \"$email\"
         WHERE 
             user_id = 3";
-        $result = $conn->query($sql);
+        $conn->query($sql);
     }
     if(!empty($password)){
         $sql = "UPDATE Account
@@ -68,20 +68,49 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
             password = \"$password\"
         WHERE 
             user_id = 3";
-        $result = $conn->query($sql);
+        $conn->query($sql);
     }
 
     //queries username and email
-    $sql = "UPDATE username FROM Account WHERE username=\"$username\" LIMIT 0 , 30";
+    $sql = "SELECT username FROM Account WHERE username=\"$username\" LIMIT 0 , 30";
     $result = $conn->query($sql);
 
     $sql2 = "SELECT email FROM Account WHERE email=\"$email\" LIMIT 0 , 30";
     $result2 = $conn->query($sql2);
+
+    //checks if username and/or email already in use
+    if($result->num_rows > 0 && $result2->num_rows > 0) {
+        $error_message = "<br>Username and email already in use. Please choose another.<br>";
+        $resubmit = true;
+    } else if($result->num_rows > 0){
+        $error_message = "<br>Username already in use. Please choose another.<br>";
+        $resubmit = true;
+    } else if($result2->num_rows > 0){
+        $error_message = "<br>Email already in use. Please choose another.<br>";
+        $resubmit = true;
+    }    
+
+    // adds info to 'Account' database if username and email available
+    if($resubmit === false){
+        //checks if email is valid
+        if(strpos($email, "@") === false || strpos($email, ".com") === false){
+            $error_message = "<br>Invalid Email. Please choose another.<br>";
+            $resubmit = true;
+        }
+    }
+
+
 
 } else {
     echo "POST not submitted<br>";
 }
 
 CloseCon($conn);
+
+//displays signup page with appropriate error message
+if($resubmit === true){
+    include 'profile_update.html';
+    echo $error_message;
+}
 
  ?>
