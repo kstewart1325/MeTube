@@ -4,24 +4,26 @@
     <title>Login</title>
   </head>
   <body>
-    <form action="login.php" method="post">
-      <fieldset>
-        <legend>MeTube Login</legend>
-        <p>
-          <label for="username">Username: </label>
-          <input type="text" id="username" name="username" /><br />
-        </p>
-        <p>
-          <label for="password">Password: </label>
-          <input type="text" id="password" name="password" /><br />
-        </p>
-        <p><input type="submit" value="Send" /> <input type="reset" /></p>
-        
-        <!-- Sign up page -->
-        <p>Don't have an account? Sign up here:</p>
-        <a href="signup.html"><input type="submit" value="Sign-up"/></a>
-      </fieldset>
-    </form>
+    <span id="login_form">
+      <form action="login.php" method="post">
+        <fieldset>
+          <legend>MeTube Login</legend>
+          <p>
+            <label for="username">Username: </label>
+            <input type="text" id="username" name="username" /><br />
+          </p>
+          <p>
+            <label for="password">Password: </label>
+            <input type="text" id="password" name="password" /><br />
+          </p>
+          <p><input type="submit" value="Login" /> <input type="reset" /></p>
+        </fieldset>
+      </form>
+    </span> 
+    <span id="sign-up">
+      <!-- Sign up page -->
+      <p>Don't have an account? Sign up here:</p>
+      <a href="signup.html"><input type="submit" value="Sign-up" id="sign-up"/></a>
+    </span>
   </body>
 </html>
-
