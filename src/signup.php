@@ -79,16 +79,61 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
         }
     }
 
-} else {
-    echo "POST not submitted<br>";
 }
 
 CloseCon($conn);
 
+$html = <<< PAGE
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sign-up</title>
+  </head>
+  <body>
+    <span id="signup_form">
+      <form action="signup.php" method="post">
+        <fieldset>
+          <legend>MeTube Signup</legend>
+          <p>
+            <label for="first_name">First Name: </label>
+            <input type="text" id="first_name" name="first_name" /><br />
+          </p>
+          <p>
+            <label for="last_name">Last Name: </label>
+            <input type="text" id="last_name" name="last_name" /><br />
+          </p>
+          <p>
+            <label for="username">Username: </label>
+            <input type="text" id="username" name="username" /><br />
+          </p>
+          <p>
+            <label for="email">Email: </label>
+            <input type="text" id="email" name="email" /><br />
+          </p>
+          <p>
+            <label for="birthday">Date of Birth: </label>
+            <input type="date" id="birthday" name="birthday" /><br />
+          </p>
+          <p>
+            <label for="password">Password: </label>
+            <input type="text" id="password" name="password" /><br />
+          </p>
+          <p><input type="submit" value="Send" /> <input type="reset" /></p>
+        </fieldset>
+PAGE;
+
 //displays signup page with appropriate error message
 if($resubmit === true){
-    include 'signup.html';
-    echo $error_message;
+    $html .= $error_message;
 }
+
+$html .= <<< PAGE
+      </form>
+    </span>
+  </body>
+</html>
+PAGE;
+
+echo $html;
 
  ?>
