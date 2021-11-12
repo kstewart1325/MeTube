@@ -4,13 +4,15 @@
 $path = "MeTube/src/";
 $url = "http://localhost:8070/";
 
+if(!session_id()) session_start();
+
 include 'db_connection.php';
 $conn = OpenCon();
 
 $resubmit = false;
 $error_message = "";
 
-$session_user=2;
+if(isset($_SESSION['user_id'])) $session_user=$_SESSION['user_id'];
 
 // KATE: NEED THE CURRENT SESSION'S USER'S ID # STORED IN A VAR CALLED "session_user"
 // or occurences of session_user replaced by w/e you're storing it. thx ; )
@@ -37,7 +39,7 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
 
     if (isset($_POST['removeContact'])) {
         // remove from contact list
-        //queries the entered contact and current user
+        //queries the entered contact and current user in session
         $sql2 = "SELECT contact_id FROM Contact WHERE contact_id=\"$result_id\" AND user_id=\"$session_user\" LIMIT 0 , 30";
         $result2 = $conn->query($sql2);
 
