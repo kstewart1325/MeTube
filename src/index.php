@@ -64,69 +64,68 @@ $html .= <<< PAGE
 </html>
 PAGE;
 
-$css = <<< STYLE
+$css = <<< HEADER_STYLE
 <style>
     .header {
-    overflow: hidden;
-    background-color: #f1f1f1;
-    padding: 20px 10px;
-    }
-
-    .row {
-    overflow: hidden;
-    background-color: #f1f1f1;
-    padding: 20px 10px;
+        overflow: hidden;
+        background-color: #f1f1f1;
+        padding: 20px 10px;
     }
 
     .header input[type=text] {
-    float: left;
-    padding: 6px;
-    border: none;
-    margin-top: 8px;
-    margin-right: 16px;
-    font-size: 17px;
-    width: 40%;
+        float: left;
+        padding: 6px;
+        border: none;
+        margin-top: 8px;
+        margin-right: 16px;
+        font-size: 17px;
+        width: 40%;
     }
 
     .header a {
-    float: left;
-    color: black;
-    text-align: center;
-    padding: 12px;
-    text-decoration: none;
-    font-size: 18px;
-    line-height: 25px;
-    border-radius: 4px;
+        float: left;
+        color: black;
+        text-align: center;
+        padding: 12px;
+        text-decoration: none;
+        font-size: 18px;
+        line-height: 25px;
+        border-radius: 4px;
     }
 
     .header a.logo {
-    font-size: 25px;
-    font-weight: bold;
-    text-align: left;
+        font-size: 25px;
+        font-weight: bold;
+        text-align: left;
     }
 
     .header a.link {
-        margin-left: 4px;
-        margin-right: 4px;
+        margin-left: 8px;
+        margin-right: 8px;
     }
 
     .header a:hover {
-    background-color: #ddd;
-    color: black;
+        background-color: #ddd;
+        color: black;
     }
 
     .header a.active {
-    background-color: dodgerblue;
-    color: white;
+        background-color: dodgerblue;
+        color: white;
+    }
+
+    .header a.active:hover {
+        background-color: #85c3ff;
+        color: white;
     }
 
     .header-right {
-    float: right;
+        float: right;
     }
 
     .header-left {
-    width: 27.5%;
-    float: left;
+        float: left;
+        width: 27.5%;
     }
 
     @media screen and (max-width: 500px) {
@@ -148,8 +147,23 @@ $css = <<< STYLE
             float: none;
         }
     }
+HEADER_STYLE;
+
+$css .= <<< HOME_STYLE
+.row {
+    overflow: hidden;
+    padding: 10px 20px;
+}
+
+.media {
+    float: left;
+    width: 300px;
+    height: 200px;
+    padding: 10px 10px;
+}
+
 </style>
-STYLE;
+HOME_STYLE;
 
 echo $html;
 echo $css;
