@@ -1,6 +1,13 @@
 <?php
 
-if(!session_id()) session_start();
-$isLoggedIn = $_SESSION['isLoggedIn'];
+function getHomePage(){
+    $html = <<< PAGE
+    <div class="home">
+       <p>Home Page</p>
+    </div>
+    PAGE;
+
+    return $html;
+}
 
 ?>

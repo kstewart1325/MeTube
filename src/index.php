@@ -1,5 +1,12 @@
 <?php
 
+//include all pages
+include 'home.php';
+include 'channel.php';
+
+$path = "MeTube/src/";
+$url = "http://localhost:8070/";
+
 if(!session_id()) session_start();
 
 if(!isset($_SESSION['isLoggedIn'])){
@@ -7,6 +14,13 @@ if(!isset($_SESSION['isLoggedIn'])){
 }
 
 $isLoggedIn = $_SESSION['isLoggedIn'];
+$currentPage = "home";
+
+if($_SERVER['REQUEST_METHOD']=="GET"){
+    if(isset($_GET['page'])){
+        $currentPage = $_GET['page'];
+    }
+}
 
 $html = <<< PAGE
 <!DOCTYPE html>
@@ -16,29 +30,36 @@ $html = <<< PAGE
 
 <body>
     <div class="header">
-        <a href="#default" class="logo">MeTube</a>
+        <a href="" class="logo">MeTube</a>
         <div class="header-right">
-            <a class="active" href="#home">Home</a>
+        <a class="active" href="index.php?page=home">Home</a>
 PAGE;
 
-if($isLoggedIn){
-    $html .= <<< LOGIN
-            "<a href=/"#login/">Log-in</a>";
-    LOGIN;
+if(!$isLoggedIn){
+    $html .= "<a href=\"login.php\">Log-in</a>";
 
 } else {
-    $html .= <<< LOGOUT
-            <a href="#channel">Account</a>
-            <a href="#logout">Log-out</a>
-    LOGOUT;
+    $html .= "<a href=\"index.php?page=channel\">Account</a>";
+    $html .= "<a href=\"logout.php\">Log-out</a>";
 }
 
 $html .= <<< PAGE
         </div>
     </div>
+PAGE;
+
+if($currentPage === "home"){
+    $html .= getHomePage();
+} else if($currentPage === "channel"){
+    $html .= getChannelPage();
+}
+
+$html .= <<< PAGE
 </body>
 </html>
+PAGE;
 
+$css = <<< STYLE
 <style>
     /* Style the header with a grey background and some padding */
     .header {
@@ -94,8 +115,9 @@ $html .= <<< PAGE
         }
     }
 </style>
-PAGE;
+STYLE;
 
 echo $html;
+echo $css;
 
 ?>
