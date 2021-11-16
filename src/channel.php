@@ -14,7 +14,6 @@ function getChannelPage(){
             <img class="media" src="../media/image-placeholder.png" alt="Image Placeholder">
             <img class="media" src="../media/video-placeholder.png" alt="Video Placeholder">
             <img class="media" src="../media/video-placeholder.png" alt="Video Placeholder">
-            <img class="media" src="../media/image-placeholder.png" alt="Image Placeholder">
        </div>
     </div>
     PAGE;

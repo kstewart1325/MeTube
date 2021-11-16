@@ -33,7 +33,7 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
             $sql = "SELECT `user_id` FROM Account WHERE `username`=\"$username\" AND `password`=\"$password\"";
             $result = $conn->query($sql);
             $row = $result->fetch_assoc();
-            $id = $row["id"];
+            $id = $row["user_id"];
 
             //sets session variables and switches to index
             $_SESSION['isLoggedIn'] = true;
@@ -73,7 +73,7 @@ PAGE;
 
 //displays signup page with appropriate error message
 if($resubmit === true){
-    $html .= $error_message;
+  $html .= $error_message;
 }
 
 $html .= <<< PAGE

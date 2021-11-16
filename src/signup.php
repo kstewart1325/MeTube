@@ -53,7 +53,7 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
     // adds info to 'Account' database if username and email available
     if($resubmit === false){
         //checks if email is valid
-        if(strpos($email, "@") === false || strpos($email, ".com") === false){
+        if(strpos($email, "@") === false || strpos($email, ".") === false){
             $error_message = "<br>Invalid Email. Please choose another.<br>";
             $resubmit = true;
         }

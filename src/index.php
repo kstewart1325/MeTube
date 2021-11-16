@@ -1,16 +1,20 @@
 <?php
 
 //include all pages
+include 'db_connection.php';
 include 'home.php';
 include 'channel.php';
 
 $path = "MeTube/src/";
 $url = "http://localhost:8070/";
 
+$conn = openCon();
+
 if(!session_id()) session_start();
 
 if(!isset($_SESSION['isLoggedIn'])){
     $_SESSION['isLoggedIn'] = false;
+    $_SESSION['user_id'] = -1;
 }
 
 $isLoggedIn = $_SESSION['isLoggedIn'];
@@ -44,8 +48,8 @@ if(!$isLoggedIn){
     $html .= "<a class=\"link\" href=\"login.php\">Log-in</a>";
 
 } else {
-    $html .= "<a class=\"link\" href=\"index.php?page=channel\">Account</a>";
-    $html .= "<a class=\"link\" href=\"logout.php\">Log-out</a>";
+    $html .= "<a class=\"link\" style=\"margin-right: 0px\" href=\"index.php?page=channel\">Account</a>";
+    $html .= "<a class=\"link\" style=\"margin-left: 0px\" href=\"index.php?page=logout\">Log-out</a>";
 }
 
 $html .= <<< PAGE
@@ -56,7 +60,22 @@ PAGE;
 if($currentPage === "home"){
     $html .= getHomePage();
 } else if($currentPage === "channel"){
+    //gets user's name
+    $id = $_SESSION['user_id'];
+    $sql = "SELECT `first_name` FROM Account WHERE `user_id`=\"$id\"";
+    $result = $conn->query($sql);
+    $row = $result->fetch_assoc();
+    $name = $row["first_name"];
+
+    $html .= "<div class=\"welcome\" style=\"padding-left: 20px\">";
+    $html .= "<h3>Hello $name!</h3>";
+    $html .= "</div>";
+    
     $html .= getChannelPage();
+} else if($currentPage === "logout") {
+    unset($_SESSION['isLoggedIn']);
+    unset($_SESSION['id']);
+    header('Location: '. $url . $path . 'index.php');
 }
 
 $html .= <<< PAGE
@@ -152,7 +171,7 @@ HEADER_STYLE;
 $css .= <<< HOME_STYLE
 .row {
     overflow: hidden;
-    padding: 10px 20px;
+    padding-left: 20px;
 }
 
 .media {
@@ -167,5 +186,7 @@ HOME_STYLE;
 
 echo $html;
 echo $css;
+
+closeCon($conn);
 
 ?>
