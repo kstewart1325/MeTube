@@ -2,6 +2,8 @@
   
 $path = "MeTube/src/";
 $url = "http://localhost:8070/";
+
+if(!session_id()) session_start();
   
 include 'db_connection.php';
 $conn = OpenCon();
@@ -27,7 +29,16 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
 
         //checks if username and password match account an account
         if($result->num_rows > 0) {
-            header('Location: '. $url . $path . 'index.html');
+            //gets userid for session
+            $sql = "SELECT `user_id` FROM Account WHERE `username`=\"$username\" AND `password`=\"$password\"";
+            $result = $conn->query($sql);
+            $row = $result->fetch_assoc();
+            $id = $row["user_id"];
+
+            //sets session variables and switches to index
+            $_SESSION['isLoggedIn'] = true;
+            $_SESSION['user_id'] = $id;
+            header('Location: '. $url . $path . 'index.php?page=channel');
         } else {
             $error_message = "<br><br>Incorrect username or password. Please try again.<br>";
             $resubmit = true;
@@ -37,10 +48,45 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
 
 CloseCon($conn);
 
+$html = <<< PAGE
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login</title>
+  </head>
+  <body>
+    <span id="login_form">
+      <form action="login.php" method="post">
+        <fieldset>
+          <legend>MeTube Login</legend>
+          <p>
+            <label for="username">Username: </label>
+            <input type="text" id="username" name="username" /><br />
+          </p>
+          <p>
+            <label for="password">Password: </label>
+            <input type="text" id="password" name="password" /><br />
+          </p>
+          <p><input type="submit" value="Login" /> <input type="reset" /></p>
+        </fieldset>
+PAGE;
+
 //displays signup page with appropriate error message
 if($resubmit === true){
-    include 'login.html';
-    echo $error_message;
+  $html .= $error_message;
 }
+
+$html .= <<< PAGE
+      </form>
+    </span> 
+    <span id="sign-up">
+      <p>Don't have an account? Sign up here:</p>
+      <a href="signup.php"><input type="submit" value="Sign-up" id="sign-up"/></a>
+    </span>
+  </body>
+</html>
+PAGE;
+
+echo $html;
 
 ?>
