@@ -24,7 +24,7 @@ function getChannelPage(){
             <h3>My Uploads</h3>
      PAGE;
 
-     //sorts and displays media uploaded by current user
+     //sorts and displays media uploaded by current user and sorted by date
      $sql = "SELECT * FROM Mediafiles WHERE `user_id`=\"$user_id\" ORDER BY date_created DESC";
      $result = $conn->query($sql);
      if($result->num_rows > 0){
