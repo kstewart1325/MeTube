@@ -27,7 +27,7 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
         $sql = "SELECT `username`, `password` FROM Account WHERE `username`=\"$username\" AND `password`=\"$password\" LIMIT 0 , 30";
         $result = $conn->query($sql);
 
-        //checks if username and password match account an account
+        //checks if username and password match an account
         if($result->num_rows > 0) {
             //gets userid for session
             $sql = "SELECT `user_id` FROM Account WHERE `username`=\"$username\" AND `password`=\"$password\"";
