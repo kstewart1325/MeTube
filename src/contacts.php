@@ -13,7 +13,7 @@
   include 'db_connection.php';
   $conn = OpenCon();
 
-  $session_user = $_SESSION['user_id'];
+  //$session_user = $_SESSION['user_id'];
   $session_user = 2;
   $resubmit = false;
   $error_message = "";
@@ -37,7 +37,7 @@
               $row = $result->fetch_assoc();
               $contact = $row['user_id'];
           }else{
-              $error_message = "<br>The username \"$username\" is invalid. Please try again. <br>";
+              $error_message = "<br>The username <i>$username</i> is invalid. Please try again. <br>";
               $resubmit = true;
           } 
       }
@@ -58,13 +58,13 @@
 
               if ($result === TRUE) {
                   // header('Location: '. $url . $path . 'contacts.php');
-                  $error_message = "<br>$username removed from Contact List<br>";
+                  $error_message = "<br><i>$username</i>e removed from Contact List<br>";
               } else {
                   $echo("Error: " . $sql . "<br>" . $conn->error);
               }
 
           }else{
-              $error_message = "<br>Contact $username does not exist.<br>";
+              $error_message = "<br>Contact <i>$username</i> does not exist.<br>";
               $resubmit = true;
           }          
             
@@ -76,7 +76,7 @@
           $result2 = $conn->query($sql2);
           
           if($result2->num_rows > 0){
-              $error_message = "<br>Contact already added. <br>";
+              $error_message = "<br>Contact <i>$username</i> already added. <br>";
               $resubmit = true;
           }else{
               //calculates appropriate cid for a unique value (to allow deletions)
@@ -94,7 +94,7 @@
       
               if ($result3 === TRUE) {
                   //header('Location: '. $url . $path . 'contacts.php');
-                  $error_message = "<br>$username added to Contact List<br>";
+                  $error_message = "<br><i>$username</i> added to Contact List<br>";
               } else {
                   $echo("Error: " . $sql . "<br>" . $conn->error);
               }            
@@ -107,6 +107,12 @@
     <html>
     <head>
       <title>Contacts</title>
+      <style>
+        table, th, td {
+          border: 1px solid black;
+          border-collapse: collapse;
+        }
+      </style>
     </head>
     <body>
       <span id="contact_form">
@@ -131,30 +137,43 @@
           </fieldset>
         </form>
       </span>
-    </body>
-  </html>
   PAGE;
 
   //displays contact page with appropriate error message
   $html .= $error_message;
 
-  echo $html;
+  
 
   // queries existing contacts for the current user
-  $sql = "SELECT * FROM Contacts WHERE user_id=\"$session_user\" LIMIT 0 , 30";
+  $sql = "SELECT contact_id FROM Contacts WHERE user_id=\"$session_user\"";
   $result = $conn->query($sql);
+  $html .= "<h3><u>Contacts</u></h3>";
+  
+  // print out into a table v
+  if ($result->num_rows > 0) {
+       $html .= "<table style=\"width:100%\"><tr><th>Username</th><th>Name</th></tr>";
+    
+      // output data of each row
+      while($row = $result->fetch_assoc()) {
+          $c_id = $row['contact_id'];
+        
+          $sql = "SELECT `username`, `first_name`, `last_name` FROM Account WHERE user_id=\"$c_id\"";
+          $result2 = $conn->query($sql);
+          $row2 = $result2->fetch_assoc();
 
-  // print out into a table
-  echo "<table>\n";
-
-  while($line = mysqli_fetch_array($result, MYSQLI_ASSOC)){
-      echo "\t<tr>\n";
-      foreach($line as $col_value){
-          echo "\t\t<td>$col_value</td>\n";
+          $html .= "<tr><td>".$row2["username"]."</td> <td>".$row2["first_name"]." ".$row2["last_name"]."</td></tr>";
       }
-      echo "\t<tr>\n";
+      $html .= "</table>";       
+  } else {
+    $html .= "You have no Contacts.";
   }
-  echo "</table>\n";
+
+  $html .= <<< PAGE
+    </body>
+  </html>
+  PAGE;
+
+  echo $html;
 
   CloseCon($conn);
 ?>
