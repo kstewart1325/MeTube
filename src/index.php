@@ -1,14 +1,11 @@
 <?php
 
 //include all pages
-include 'db_connection.php';
 include 'home.php';
 include 'channel.php';
 
 $path = "MeTube/src/";
 $url = "http://localhost:8070/";
-
-$conn = openCon();
 
 if(!session_id()) session_start();
 
@@ -41,15 +38,17 @@ $html = <<< PAGE
             <input type="text" placeholder="Search...">
         </div>
         <div class="header-right">
-        <a class="active" class="link" href="index.php?page=home">Home</a>
+        <a class="active" class="link" style="margin-right: 2px" href="index.php?page=home">Home</a>
 PAGE;
 
 if(!$isLoggedIn){
     $html .= "<a class=\"link\" href=\"login.php\">Log-in</a>";
 
 } else {
-    $html .= "<a class=\"link\" style=\"margin-right: 0px\" href=\"index.php?page=channel\">Account</a>";
-    $html .= "<a class=\"link\" style=\"margin-left: 0px\" href=\"index.php?page=logout\">Log-out</a>";
+    $html .= "<a class=\"link\" href=\"index.php?page=channel\">Account</a>";
+    $html .= "<a class=\"link\" href=\"upload.php\">Upload</a>";
+    $html .= "<a class=\"link\" href=\"\">Settings</a>";
+    $html .= "<a class=\"link\" href=\"index.php?page=logout\">Log-out</a>";
 }
 
 $html .= <<< PAGE
@@ -60,17 +59,6 @@ PAGE;
 if($currentPage === "home"){
     $html .= getHomePage();
 } else if($currentPage === "channel"){
-    //gets user's name
-    $id = $_SESSION['user_id'];
-    $sql = "SELECT `first_name` FROM Account WHERE `user_id`=\"$id\"";
-    $result = $conn->query($sql);
-    $row = $result->fetch_assoc();
-    $name = $row["first_name"];
-
-    $html .= "<div class=\"welcome\" style=\"padding-left: 20px\">";
-    $html .= "<h3>Hello $name!</h3>";
-    $html .= "</div>";
-    
     $html .= getChannelPage();
 } else if($currentPage === "logout") {
     unset($_SESSION['isLoggedIn']);
@@ -105,9 +93,9 @@ $css = <<< HEADER_STYLE
         float: left;
         color: black;
         text-align: center;
-        padding: 12px;
+        padding: 10px;
         text-decoration: none;
-        font-size: 18px;
+        font-size: 15px;
         line-height: 25px;
         border-radius: 4px;
     }
@@ -119,8 +107,8 @@ $css = <<< HEADER_STYLE
     }
 
     .header a.link {
-        margin-left: 8px;
-        margin-right: 8px;
+        margin-left: 2px;
+        margin-right: 2px;
     }
 
     .header a:hover {
@@ -177,8 +165,11 @@ $css .= <<< HOME_STYLE
 .media {
     float: left;
     width: 300px;
+    border: 3px solid black;
+    text-align: center;
     height: 200px;
-    padding: 10px 10px;
+    padding: 5px;
+    margin: 5px;
 }
 
 </style>
@@ -186,7 +177,5 @@ HOME_STYLE;
 
 echo $html;
 echo $css;
-
-closeCon($conn);
 
 ?>
