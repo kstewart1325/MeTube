@@ -14,8 +14,8 @@
   include 'db_connection.php';
   $conn = OpenCon();
 
-  $session_user = $_SESSION['user_id'];
-  //$session_user = 2;
+  //$session_user = $_SESSION['user_id'];
+  $session_user = 2;
   
   $resubmit = false;
   $error_message = "";
@@ -89,6 +89,17 @@
                } 
           }
 
+      }else if($_POST['removeMedia'] && $resubmit === false){
+        $mid = $_POST['m_id'];
+        $sql = "DELETE FROM Playlist_Data WHERE media_id=\"$mid\"";
+        $result = $conn->query($sql);
+
+        if ($result === TRUE) {
+          $error_message = "<br>Media removed from playlist.<br>";
+        } else {
+          echo("Error: " . $sql3 . "<br>" . $conn->error);
+        } 
+        
       }else if($resubmit === false){
           // add to user's playlists
 
@@ -174,8 +185,6 @@
               $result2 = $conn->query($sql2);
               $row2 = $result2->fetch_assoc();
               
-              // KATE: I NEED THIS TO LINK
-              // to a page with the according playlist's files
               $html .= "<li><a href=\"/MeTube/src/playlists.php?list=$pid\">".$row2["p_name"]." </a></li>";
           }
           $html .= "<ul>";
@@ -206,42 +215,47 @@
           <body>
         PAGE;
 
+        // query playlist name
         $sql = "SELECT p_name FROM Playlists WHERE list_id=$playlist";
         $result = $conn->query($sql);
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $pname = $row['p_name'];
-            $html .= "<p><h3>$pname</h3></p>";
+            $html .= "<p><h3>Playlist $pname</h3></p>";
 
-            $sql2 = "SELECT media_id FROM Playlist_Data WHERE list_id=$playlist";
+            // query media file info from the playlist
+            $sql2 = "SELECT Playlist_Data.media_id, Mediafiles.media_title FROM (Playlist_Data INNER JOIN Mediafiles ON Playlist_Data.media_id = Mediafiles.media_id) WHERE Playlist_Data.list_id=$playlist";
             $result2 = $conn->query($sql2);
-    
-            // print playlists into a table
+            
             if ($result2->num_rows > 0) {
-                $html .= "<table style=\"width:100%\"><tr><th>Media</th><th>Options</th></tr>";
+                $html .= <<< PAGE
+                    <table style=\"width:50%\">
+                    <colgroup>
+                        <col span="1" style="width: 15%;">
+                        <col span="1" style="width: 70%;">
+                    </colgroup>
+                    <tr><th>     </th><th>Media</th></tr>
+                PAGE;
                 while($row2 = $result2->fetch_assoc()){
-                    $html .= "<tr>";
                     $mid = $row2['media_id'];
-
-                    $sql3 = "SELECT media_title FROM Mediafiles WHERE media_id=\"$mid\"";
-                    $result3 = $conn->query($sql3);
-
-                    $html .= "<td>";
-                    if($result3->num_rows > 0){
-                        $row3 = $result3->fetch_assoc();
-                        $mname = $row['media_title'];
-                        $html .= "$mname";
-                    }else{
-                        $html .= "Error fetching title";
-                    }
-                    $html .= "</td></tr>";
+                    $mname = $row2['media_title'];
+                    // make mname a link to the mediafile page
+                    $html .= <<< PAGE
+                        <tr><td><form method="post" name="manage_media" id="manage_media">
+                                        <fieldset>
+                                        <input type="submit" name="removeMedia" value="delete" /> 
+                                        <input type="hidden" id="m_id" name="m_id" value="$mid"/>
+                                        <input type="hidden" id="p_name" name="p_name" value="$pname"/>
+                                        </fieldset>
+                        </form></td><td>$mname</td></tr>
+                    PAGE;
                 }
-                $html .= "</table>";
-                
+                $html .= "</table><br>";
             }else{
                 $html .= "<p><i>Playlist is empty</i></p>";
             }
+            
             $html .= <<< PAGE
                     <form method="post" name="manage_playlist" id="manage_playlist">
                         <fieldset>
@@ -256,14 +270,14 @@
                         <p>
                             <input type="submit" name="removePlaylist" value="Delete Playlist" /> 
                         <p>
-                        <input type="hidden" id="p_name" name="p_name" value="$pname"/><br />
+                        <input type="hidden" id="p_name" name="p_name" value="$pname"/>
                         </fieldset>
                     </form>
                 </body>
             </html>
             PAGE;
         }else{
-            $error_message = "Error fetching playlist data.";
+            echo "Error fetching playlist.";
         }
   }
 
