@@ -9,7 +9,6 @@
 
   $path = "MeTube/src/";
   $url = "http://localhost:8070/";
-  $manage = "playlist_management.php";
 
   include 'db_connection.php';
   $conn = OpenCon();
