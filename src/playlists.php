@@ -19,6 +19,24 @@
   
   $resubmit = false;
   $error_message = "";
+
+  $alert = "";
+  $directed = false;
+
+  $html = <<< PAGE
+      <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Playlists</title>
+          <style>
+            table, th, td {
+              border: 1px solid black;
+              border-collapse: collapse;
+            }
+          </style>
+        </head>
+        <body>
+    PAGE;
   
   if($_SERVER['REQUEST_METHOD']=="POST"){
       //stores data from form
@@ -59,6 +77,7 @@
             if ($result === TRUE) {
                 // header('Location: '. $url . $path . 'contacts.php');
                 $error_message = "<br>Playlist <i>$playlist</i> deleted. ";
+                header('Location: '. $url . $path . 'playlists.php');
             } else {
                 echo("Error: " . $sql . "<br>" . $conn->error);
             }
@@ -68,34 +87,38 @@
               $resubmit = true;
           }          
             
-      }else if($_POST['renamePlaylist'] && $resubmit === false){
+      }else if(isset($_POST['renamePlaylist']) && $resubmit === false){
           $nname = $_POST['new_name'];
+          $pname = $_POST['p_name'];
+          $pid = $_POST['p_id'];
+
 
           //queries the entered playlist with current user
-          $sql2 = "SELECT p_name FROM Playlists WHERE p_name=\"$nname\" AND user_id=$session_user LIMIT 0 , 30";
+          $sql2 = "SELECT * FROM Playlists WHERE p_name=\"$nname\" AND user_id=$session_user LIMIT 0 , 30";
           $result2 = $conn->query($sql2);
           
           if($result2->num_rows > 0){
-              $error_message = "<br>There is already a playlist named $nname on your account. <br> Please try another name.<br>";
-              $resubmit = true;
+              $alert = "<br>There is already a playlist named $nname on your account. <br>Please try another name.<br>";
+              header('Location: '. $url . $path . 'playlists.php?list='. $pid);
           }else{
-              $sql3 = "UPDATE Playlists SET p_name=\"$nname\" WHERE p_name=\"$playlist\"";
+              $sql3 = "UPDATE Playlists SET p_name=\"$nname\" WHERE list_id=\"$pid\"";
               $result3 = $conn->query($sql3);
 
               if ($result3 === TRUE) {
-                $error_message = "<br>$playlist renamed to $nname.<br>";
+                $alert = "<br>$playlist renamed to $nname.<br>";
+                header('Location: '. $url . $path . 'playlists.php?list='. $pid);
               } else {
                 echo("Error: " . $sql3 . "<br>" . $conn->error);
-               } 
+              } 
           }
 
-      }else if($_POST['removeMedia'] && $resubmit === false){
+      }else if(isset($_POST['removeMedia']) && $resubmit === false){
         $mid = $_POST['m_id'];
         $sql = "DELETE FROM Playlist_Data WHERE media_id=\"$mid\"";
         $result = $conn->query($sql);
 
         if ($result === TRUE) {
-          $error_message = "<br>Media removed from playlist.<br>";
+          $alert = "<br>Media removed from playlist.<br>";
         } else {
           echo("Error: " . $sql3 . "<br>" . $conn->error);
         } 
@@ -125,160 +148,132 @@
               $result3 = $conn->query($sql);
       
               if ($result3 === TRUE) {
-                  $error_message = "<br><i>$playlist</i> added to your playlists.<br>";
+                  $error_message = "<br>$playlist added to your playlists.<br>";
+                  header('Location: '. $url . $path . 'playlists.php');
               } else {
                   echo("Error: " . $sql . "<br>" . $conn->error);
               }            
           }      
       }
-
-      $html = <<< PAGE
-      <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Playlists</title>
-          <style>
-            table, th, td {
-              border: 1px solid black;
-              border-collapse: collapse;
-            }
-          </style>
-        </head>
-        <body>
-          <span id="contact_form">
-            <form method="post" name="create_playlist_form" id="create_playlist_form">
-              <fieldset>
-                
-                <p>
-                  <label for="p_name">Playlist Name: </label>
-                  <input type="text" id="p_name" name="p_name" /><br />
-                </p>
-                <p>
-      PAGE;
-                
-      $html .= "<input type=\"submit\" name=\"createPlaylist\" value=\"Create New Playlist\" /> ";
-      $html .= "<input type=\"submit\" name=\"removePlaylist\" value=\"Delete Playlist\" /> ";
-    
-      //displays contact page with appropriate error message
-      $html .= "<br><i>$error_message</i>";
-    
-      $html .= <<< PAGE
-                </p>
-              </fieldset>
-            </form>
-          </span>
-      PAGE;
-    
-      // queries existing playlists for the current user
-      $sql = "SELECT list_id FROM Playlists WHERE user_id=\"$session_user\"";
-      $result = $conn->query($sql);
-      $html .= "<h3><u>Your Playlists</u></h3><p>Click a playlist to view and manage.</p>";
-      
-      // print out into a table v
-      if ($result->num_rows > 0) {
-          $html .= "<ul>";
-          // get each playlist name and print 
-          while($row = $result->fetch_assoc()) {
-              $pid = $row['list_id'];
-            
-              $sql2 = "SELECT p_name FROM Playlists WHERE list_id=\"$pid\"";
-              $result2 = $conn->query($sql2);
-              $row2 = $result2->fetch_assoc();
-              
-              $html .= "<li><a href=\"/MeTube/src/playlists.php?list=$pid\">".$row2["p_name"]." </a></li>";
-          }
-          $html .= "<ul>";
-      } else {
-        $html .= "You have no Playlists.";
-      }
-    
-      $html .= <<< PAGE
-        </body>
-      </html>
-      PAGE;
     
   }else if($_SERVER['REQUEST_METHOD']=="GET"){
-        $playlist = $_GET['list'];
-
-        $html = <<< PAGE
-        <!DOCTYPE html>
-          <html>
-          <head>
-            <title>Playlists</title>
-            <style>
-              table, th, td {
-                border: 1px solid black;
-                border-collapse: collapse;
-              }
-            </style>
-          </head>
-          <body>
-        PAGE;
-
-        // query playlist name
-        $sql = "SELECT p_name FROM Playlists WHERE list_id=$playlist";
-        $result = $conn->query($sql);
-
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $pname = $row['p_name'];
-            $html .= "<p><h3>Playlist $pname</h3></p>";
-
-            // query media file info from the playlist
-            $sql2 = "SELECT Playlist_Data.media_id, Mediafiles.media_title FROM (Playlist_Data INNER JOIN Mediafiles ON Playlist_Data.media_id = Mediafiles.media_id) WHERE Playlist_Data.list_id=$playlist";
-            $result2 = $conn->query($sql2);
-            
-            if ($result2->num_rows > 0) {
-                $html .= <<< PAGE
-                    <table style=\"width:50%\">
-                    <colgroup>
-                        <col span="1" style="width: 15%;">
-                        <col span="1" style="width: 70%;">
-                    </colgroup>
-                    <tr><th>     </th><th>Media</th></tr>
-                PAGE;
-                while($row2 = $result2->fetch_assoc()){
-                    $mid = $row2['media_id'];
-                    $mname = $row2['media_title'];
-                    // make mname a link to the mediafile page
+        if(isset($_GET["list"])){
+            $playlist = $_GET['list'];
+    
+            // query playlist name
+            $sql = "SELECT p_name FROM Playlists WHERE list_id=$playlist";
+            $result = $conn->query($sql);
+    
+            if ($result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                $pname = $row['p_name'];
+                $html .= "<p><h3>Playlist $pname</h3></p>";
+    
+                // query media file info from the playlist
+                $sql2 = "SELECT Playlist_Data.media_id, Mediafiles.media_title FROM (Playlist_Data INNER JOIN Mediafiles ON Playlist_Data.media_id = Mediafiles.media_id) WHERE Playlist_Data.list_id=$playlist";
+                $result2 = $conn->query($sql2);
+                
+                if ($result2->num_rows > 0) {
                     $html .= <<< PAGE
-                        <tr><td><form method="post" name="manage_media" id="manage_media">
-                                        <fieldset>
-                                        <input type="submit" name="removeMedia" value="delete" /> 
-                                        <input type="hidden" id="m_id" name="m_id" value="$mid"/>
-                                        <input type="hidden" id="p_name" name="p_name" value="$pname"/>
-                                        </fieldset>
-                        </form></td><td>$mname</td></tr>
+                        <table style=\"width:50%\">
+                        <colgroup>
+                            <col span="1" style="width: 15%;">
+                            <col span="1" style="width: 70%;">
+                        </colgroup>
+                        <tr><th>     </th><th>Media</th></tr>
                     PAGE;
+                    while($row2 = $result2->fetch_assoc()){
+                        $mid = $row2['media_id'];
+                        $mname = $row2['media_title'];
+                        // make mname a link to the mediafile page
+                        $html .= <<< PAGE
+                            <tr><td><form method="post" name="manage_media" id="manage_media">
+                                            <fieldset>
+                                            <input type="submit" name="removeMedia" value="remove" /> 
+                                            <input type="hidden" id="m_id" name="m_id" value="$mid"/>
+                                            <input type="hidden" id="p_id" name="p_id" value="$playlist"/>
+                                            </fieldset>
+                            </form></td><td>$mname</td></tr>
+                        PAGE;
+                    }
+                    $html .= "</table><br>";
+                }else{
+                    $html .= "<p><i>Playlist is empty</i></p><p>$alert</p>";
                 }
-                $html .= "</table><br>";
+                
+                $html .= <<< PAGE
+                        <form method="post" name="manage_playlist" id="manage_playlist">
+                            <fieldset>
+                            <p>
+                                <label for="new_name">New Name: </label>
+                                <input type="text" id="new_name" name="new_name" />
+                                <input type="submit" name="renamePlaylist" value="Rename Playlist" />
+                            </p>
+                            <b>Playlist cannot be recovered once deleted.</b><br>
+                            <p>
+                                <input type="submit" name="removePlaylist" value="Delete Playlist" /> 
+                                <input type="hidden" id="p_id" name="p_id" value="$playlist"/>
+                                <input type="hidden" id="p_name" name="p_name" value="$pname"/>
+                            </p>
+                            </fieldset>
+                        </form>
+                PAGE;
             }else{
-                $html .= "<p><i>Playlist is empty</i></p>";
+                echo "Playlist does not exist.";
             }
-            
-            $html .= <<< PAGE
-                    <form method="post" name="manage_playlist" id="manage_playlist">
-                        <fieldset>
-                        <p>
-                            <label for="new_name">New Name: </label>
-                            <input type="text" id="new_name" name="new_name" />
-                            <input type="submit" name="renamePlaylist" value="Rename Playlist" />
-                        </p>
-                        <p>
-                            <b>Playlist cannot be recovered once deleted.</b>
-                        </p>
-                        <p>
-                            <input type="submit" name="removePlaylist" value="Delete Playlist" /> 
-                        <p>
-                        <input type="hidden" id="p_name" name="p_name" value="$pname"/>
-                        </fieldset>
-                    </form>
-                </body>
-            </html>
-            PAGE;
+
         }else{
-            echo "Error fetching playlist.";
+            $html = <<< PAGE
+            <span id="playlist_form">
+              <form method="post" name="create_playlist_form" id="create_playlist_form">
+                <fieldset>
+                  
+                  <p>
+                    <label for="p_name">Playlist Name: </label>
+                    <input type="text" id="p_name" name="p_name" /><br />
+                  </p>
+                  <p>
+                    <input type="submit" name="createPlaylist" value="Create New Playlist" /> 
+                    <input type="submit" name="removePlaylist" value="Delete Playlist" />
+                    <br><i>$error_message</i>
+                  </p>
+                </fieldset>
+              </form>
+            </span>
+            PAGE;
+        
+            // queries existing playlists for the current user
+            $sql = "SELECT list_id FROM Playlists WHERE user_id=\"$session_user\"";
+            $result = $conn->query($sql);
+            $html .= "<h3><u>Your Playlists</u></h3><p>Click a playlist to view and manage.</p>";
+            
+            // print out into a table v
+            if ($result->num_rows > 0) {
+                $html .= "<ul>";
+                // get each playlist name and print 
+                while($row = $result->fetch_assoc()) {
+                    $pid = $row['list_id'];
+                
+                    $sql2 = "SELECT p_name FROM Playlists WHERE list_id=\"$pid\"";
+                    $result2 = $conn->query($sql2);
+                    $row2 = $result2->fetch_assoc();
+                    
+                    $html .= "<li><a href=\"/MeTube/src/playlists.php?list=$pid\">".$row2["p_name"]." </a></li>";
+                }
+                $html .= "<ul>";
+            } else {
+            $html .= "You have no Playlists.";
+            }
         }
+  }
+    
+  $html .= <<< PAGE
+    </body>
+  </html>
+  PAGE;
+
+  if($resubmit === true){
+    header('Location: '. $url . $path . 'playlists.php');
   }
 
   echo $html;
