@@ -6,7 +6,6 @@
 -->
 
 <?php
-
   $path = "MeTube/src/index.php";
   $url = "http://localhost:8070/";
 
@@ -153,9 +152,9 @@
   }
   
 // get request to add media to a playlist from a mediafile page
-  if(isset($_GET["media"]) && isset($_GET["list"])){
+  if(isset($_GET["file"]) && isset($_GET["list"])){
     $pl = $_GET['list'];
-    $m = $_GET['media'];
+    $m = $_GET['file'];
 
     //calculates appropriate id for a unique value (to allow deletions)
     $id = 0;
@@ -299,4 +298,5 @@
   echo $html;
   
   CloseCon($conn);
+
 ?>
