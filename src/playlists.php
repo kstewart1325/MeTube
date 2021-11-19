@@ -7,14 +7,13 @@
 
 <?php
 
-  $path = "MeTube/src/";
+  $path = "MeTube/src/index.php";
   $url = "http://localhost:8070/";
 
   include 'db_connection.php';
   $conn = OpenCon();
 
   $session_user = $_SESSION['user_id'];
-  //$session_user = 2;
   
   $resubmit = false;
   $error_message = "";
@@ -74,7 +73,7 @@
 
             if ($result === TRUE) {
                 //$error_message = "<br>Playlist <i>$playlist</i> deleted. ";
-                header('Location: '. $url . $path . 'playlists.php');
+                header('Location: '. $url . $path . '?page=playlists');
             } else {
                 echo("Error: " . $sql . "<br>" . $conn->error);
             }
@@ -95,7 +94,7 @@
           
           if($result2->num_rows > 0){
               $error_message = "<br>There is already a playlist named $nname on your account. <br>Please try another name.<br>";
-              header('Location: '. $url . $path . 'playlists.php?list='. $pid);
+              header('Location: '. $url . $path . '?page=playlists&list='. $pid);
           }else{
               $sql3 = "UPDATE Playlists SET p_name=\"$nname\" WHERE list_id=\"$pid\"";
               $result3 = $conn->query($sql3);
@@ -103,7 +102,6 @@
               if ($result3 === TRUE) {
                 $error_message = "<br>$playlist renamed to $nname.<br>";
                 $subpage = true;
-                //header('Location: '. $url . $path . 'playlists.php?list='. $pid);
               } else {
                 echo("Error: " . $sql3 . "<br>" . $conn->error);
               } 
@@ -111,7 +109,7 @@
 
       }else if(isset($_POST['removeMedia']) && $resubmit === false){
         $mid = $_POST['m_id'];
-        $sql = "DELETE FROM Playlist_Data WHERE media_id=\"$mid\"";
+        $sql = "DELETE FROM Playlist_Data WHERE media_id=\"$mid\" AND user_id=\"$session_user\"";
         $result = $conn->query($sql);
 
         if ($result === TRUE) {
@@ -141,26 +139,51 @@
                   $id = $row["id"] + 1;
               }
       
-              // add info to 'Contacts' database
+              // add info to 'Playlists' database
               $sql = "INSERT INTO Playlists VALUES ('$id', '$session_user', '$playlist')";
               $result3 = $conn->query($sql);
       
               if ($result3 === TRUE) {
                   $error_message = "<br>$playlist added to your playlists.<br>";
-                  //header('Location: '. $url . $path . 'playlists.php');
               } else {
                   echo("Error: " . $sql . "<br>" . $conn->error);
               }            
           }      
       } 
   }
+  
+// get request to add media to a playlist from a mediafile page
+  if(isset($_GET["media"]) && isset($_GET["list"])){
+    $pl = $_GET['list'];
+    $m = $_GET['media'];
+
+    //calculates appropriate id for a unique value (to allow deletions)
+    $id = 0;
+    $sql = "SELECT MAX(entry_num) AS id FROM Playlist_Data";
+    $result = $conn->query($sql);
+    if($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $id = $row["id"] + 1;
+    }
     
-  if(isset($_GET["list"])){
+    // add info to 'Playlist_Data' table
+    $sql2 = "INSERT INTO Playlist_Data VALUES ('$pl', '$m', '$id')";
+    $result2 = $conn->query($sql2);
+
+    if ($result2 === TRUE) {
+        header('Location: '. $url . $path . 'page=media&success=true&list=' . $pl);
+        
+    } else {
+        header('Location: '. $url . $path . 'page=media&success=false&list=' . $pl);
+    }  
+      
+// get request for displaying a playlist's page
+  }else if(isset($_GET["list"])){
     $subpage = true;
     $playlist = $_GET['list'];
 
     // query playlist name
-    $sql = "SELECT p_name FROM Playlists WHERE list_id=$playlist";
+    $sql = "SELECT p_name FROM Playlists WHERE list_id=$playlist AND user_id=\"$session_user\"";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
@@ -184,7 +207,7 @@
             while($row2 = $result2->fetch_assoc()){
                 $mid = $row2['media_id'];
                 $mname = $row2['media_title'];
-                // make mname a link to the mediafile page
+
                 $html .= <<< PAGE
                     <tr><td><form method="post" name="manage_media" id="manage_media">
                                     <fieldset>
@@ -193,8 +216,8 @@
                                     <input type="hidden" id="p_id" name="p_id" value="$playlist"/>
                                     <input type="hidden" id="p_name" name="p_name" value="$pname"/>
                                     </fieldset>
-                    </form></td><td>$mname</td></tr>
-                PAGE;
+                    </form></td><td><a href=\"/MeTube/src/index.php?page=media&id=$mid\">$mname</a></td></tr>
+                PAGE; 
             }
             $html .= "</table><br>";
         }else{
@@ -223,7 +246,7 @@
     }
 
     $html .= "<br><a href = \"playlists.php\">Return to Playlists</a>";
-   
+// displays default page with all playlists for a user listed
   }else if(!($subpage)){
         $html = <<< PAGE
         <span id="playlist_form">
@@ -260,7 +283,7 @@
                 $result2 = $conn->query($sql2);
                 $row2 = $result2->fetch_assoc();
                 
-                $html .= "<li><a href=\"/MeTube/src/playlists.php?list=$pid\">".$row2["p_name"]." </a></li>";
+                $html .= "<li><a href=\"/MeTube/src/index.php?page=playlists&list=$pid\">".$row2["p_name"]." </a></li>";
             }
             $html .= "<ul>";
         } else {
