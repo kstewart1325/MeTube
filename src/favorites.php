@@ -13,8 +13,7 @@
   include 'db_connection.php';
   $conn = OpenCon();
 
-  //$session_user = $_SESSION['user_id'];
-  $session_user = 2;
+  $session_user = $_SESSION['user_id'];
   
   $removed = false;
   $error_message = "";
