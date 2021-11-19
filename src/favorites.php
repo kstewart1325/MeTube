@@ -6,7 +6,6 @@
 -->
 
 <?php
-
   $path = "MeTube/src/index.php";
   $url = "http://localhost:8070/";
 
@@ -50,8 +49,8 @@
     } 
   }
   
-  if(isset($_GET["media"])){
-    $m = $_GET['media'];
+  if(isset($_GET["file"])){
+    $m = $_GET['file'];
 
     //calculates appropriate id for a unique value (to allow deletions)
     $id = 0;
@@ -127,4 +126,5 @@
   echo $html;
   
   CloseCon($conn);
+
 ?>
