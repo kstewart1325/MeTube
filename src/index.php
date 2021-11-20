@@ -25,7 +25,7 @@ if($_SERVER['REQUEST_METHOD']=="GET"){
     }
 
     if(isset($_GET['id'])){
-        $currentMedia = $_GET['id'];
+        $id = $_GET['id'];
     }
 }
 
@@ -52,7 +52,8 @@ if(!$isLoggedIn){
     $html .= "<a class=\"link\" href=\"login.php\">Log-in</a>";
 
 } else {
-    $html .= "<a class=\"link\" href=\"index.php?page=channel\">Account</a>";
+    $user_id = $_SESSION['user_id'];
+    $html .= "<a class=\"link\" href=\"index.php?page=channel&id=$user_id\">Account</a>";
     $html .= "<a class=\"link\" href=\"upload.php\">Upload</a>";
     $html .= "<a class=\"link\" href=\"\">Settings</a>";
     $html .= "<a class=\"link\" href=\"index.php?page=logout\">Log-out</a>";
@@ -67,9 +68,9 @@ PAGE;
 if($currentPage === "home"){
     $html .= getHomePage();
 } else if($currentPage === "channel"){
-    $html .= getChannelPage();
+    $html .= getChannelPage($id);
 } else if($currentPage === "media"){
-    $html .= getMediaPage($currentMedia);
+    $html .= getMediaPage($id);
 } else if($currentPage === "logout") {
     unset($_SESSION['isLoggedIn']);
     unset($_SESSION['id']);

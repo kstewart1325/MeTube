@@ -58,12 +58,9 @@ function getMediaPage($media_id){
         $html .= "</div>";
 
         // displays owner and subscribe button
-        $html .= <<< HEAD
-        <div class="media-header">
-            <a href = ""><div class="media-header-left">
-                <img style="float: left; width: 40px; height: 40px" src="../media/profile-icon.png">
-        HEAD;
-
+        $html .= "<div class=\"media-header\">";
+        $html .= "<a href = \"index.php?page=channel&id=$media_user_id\"><div class=\"media-header-left\">";
+        $html .= "<img style=\"float: left; width: 40px; height: 40px\" src=\"../media/profile-icon.png\">";
         $html .= "<h3 style=\"float: left; margin-left: 5px\">$fullname</h3>";
 
         $html .= <<< HEAD

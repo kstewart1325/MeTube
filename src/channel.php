@@ -1,22 +1,27 @@
 <?php 
 
-function getChannelPage(){
+function getChannelPage($user_id){
      include 'db_connection.php';
 
      $conn = openCon();
 
      if(!session_id()) session_start();
-     $user_id = $_SESSION['user_id'];
+     $current_user_id = $_SESSION['user_id'];
+     $isLoggedIn = $_SESSION['isLoggedIn'];
 
-     //gets user's name
-     $sql = "SELECT `first_name` FROM Account WHERE `user_id`=\"$user_id\"";
-     $result = $conn->query($sql);
-     $row = $result->fetch_assoc();
-     $name = $row["first_name"];
+     $html = "";
+     
+     if($isLoggedIn && $user_id === $current_user_id){
+          //gets user's name
+          $sql = "SELECT `first_name` FROM Account WHERE `user_id`=\"$user_id\"";
+          $result = $conn->query($sql);
+          $row = $result->fetch_assoc();
+          $name = $row["first_name"];
 
-     $html = "<div class=\"welcome\" style=\"padding-left: 20px\">";
-     $html .= "<h2>Hello $name!</h2>";
-     $html .= "</div>";
+          $html .= "<div class=\"welcome\" style=\"padding-left: 20px\">";
+          $html .= "<h2>Hello $name!</h2>";
+          $html .= "</div>";
+     }
 
      $html .= <<< PAGE
      <div class="home">
