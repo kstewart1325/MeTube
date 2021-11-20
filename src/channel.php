@@ -31,12 +31,16 @@ function getChannelPage(){
           while($row = $result->fetch_assoc()){
                $title = $row['media_title'];
                $desc = $row['description'];
+               $media_id = $row['media_id'];
 
+               $html .= "<a href=\"index.php?page=media&id=$media_id\">";
                $html .= "<div class=\"media\">";
                $html .= "<h4>$title</h4>";
                $html .= "<p>$desc</p>";
-               $html .= "</div>";
+               $html .= "</div></a>";
           }
+     } else {
+          $html .= "<div class=\"media\" style=\"border: 0px\"></div>";
      }
 
      $html .= <<< PAGE
