@@ -31,6 +31,7 @@ function getMediaPage($media_id){
         $media_user_id = $row['user_id'];
         $view_count = $row['view_count'];
         $category = $row['category'];
+        $media_path = $row['media_path'];
         $keywords = "";
 
         $sql = "SELECT * FROM Account WHERE `user_id`=\"$media_user_id\"";
@@ -90,7 +91,11 @@ function getMediaPage($media_id){
         $html .= <<< DATA
             </div>
             <div style="float: right" class="data-right">
-                <a href="" >Download</a>
+        DATA;
+
+        $html .= "<a href=\"$media_path\" download>Download</a>";
+
+        $html .= <<< DATA
                 <a href="" >Add to Playlist</a>
             </div>
         </div>
