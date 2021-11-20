@@ -29,8 +29,15 @@ function getMediaPage($media_id){
         $desc = $row['description'];
         $date_uploaded = $row['date_created'];
         $media_user_id = $row['user_id'];
+        $view_count = $row['view_count'];
+        $category = $row['category'];
+        $keywords = "";
 
-        $html .= "<h2 style=\"text-align: center\">$media_title</h2>";
+        $sql = "SELECT * FROM Account WHERE `user_id`=\"$media_user_id\"";
+        $result = $conn->query($sql);
+        $row = $result->fetch_assoc();
+        $fullname = $row['first_name'] . " " . $row['last_name'];
+
         $html .= "<div id=\"media-container\" class=\"display\">";
 
         if(in_array($media_type, $imageTypes)){
@@ -47,37 +54,51 @@ function getMediaPage($media_id){
             $html .= "<p>Unable to display media.</p>";
         }
     
+        $html .= "</div>";
 
-        $html .= <<< PAGE
-        </div>
-        PAGE;
+        // displays owner and subscribe button
+        $html .= <<< HEAD
+        <div class="media-header">
+            <a href = ""><div class="media-header-left">
+                <img style="float: left; width: 40px; height: 40px" src="../media/profile-icon.png">
+        HEAD;
 
-        //displays options to edit media if logged in and if media belongs to user
-        if($isLoggedIn && ($user_id === $media_user_id)){
-            $html .= <<< PAGE
-            <div class="media-header">
-                <div class="media-header-left">
-                    <a href="" class="logo">MeTube</a>
-                </div>
-                <div class="media-header-right">
-                    <a class="active" class="link" style="margin-right: 2px" href="index.php?page=home">Home</a>
-                </div>
+        $html .= "<h3 style=\"float: left; margin-left: 5px\">$fullname</h3>";
+
+        $html .= <<< HEAD
+            </div></a>
+            <div class="media-header-right">
+                <a href="" >Subscribe</a>
             </div>
-            PAGE;
-        }
+        </div>
+        HEAD;
 
         //displays metadata of media file
-        $html .= "<div class=\"meta-data\">";
-        $html .= "<p>$desc</p>";
-        $html .= "<p>$date_uploaded</p>";
+        $html .= <<< DATA
+        <div class="meta-data">
+            <hr style="margin-bottom: 10px;" class="solid">
+            <div style="float: left; margin-left: 10px;" class="data-left">
+        DATA;
 
-        $html .= <<< PAGE
+        $html .= "<h3>$media_title</h3>";
+        $html .= $desc;
+        $html .= "<br>";
+        $html .= "<p>$view_count views  |  Date uploaded: $date_uploaded</p>";
+        $html .= "<p>Category: $category</p>";
+        $html .= "<p>Keywords: $keywords</p><br>";
+
+        $html .= <<< DATA
+            </div>
+            <div style="float: right" class="data-right">
+                <a href="" >Download</a>
+                <a href="" >Add to Playlist</a>
+            </div>
         </div>
-        <div class="comments">
-        PAGE;
+        DATA;        
 
         //diplays comments in hierarchial order
         $html .= <<< PAGE
+        <div class="comments">
         </div>
         PAGE;
     }
