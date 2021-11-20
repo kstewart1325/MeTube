@@ -61,7 +61,7 @@ if(!$isLoggedIn){
 $html .= <<< PAGE
         </div>
     </div>
-    <div style="margin-bottom: 15px;" class="page">
+    <div style="margin-bottom: 15px; margin-top: 15px;" class="page">
 PAGE;
 
 if($currentPage === "home"){
