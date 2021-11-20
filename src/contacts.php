@@ -60,7 +60,7 @@
                   // header('Location: '. $url . $path . 'contacts.php');
                   $error_message = "<br><i>$username</i>e removed from Contact List<br>";
               } else {
-                  $echo("Error: " . $sql . "<br>" . $conn->error);
+                  echo("Error: " . $sql . "<br>" . $conn->error);
               }
 
           }else{
@@ -96,7 +96,7 @@
                   //header('Location: '. $url . $path . 'contacts.php');
                   $error_message = "<br><i>$username</i> added to Contact List<br>";
               } else {
-                  $echo("Error: " . $sql . "<br>" . $conn->error);
+                  echo("Error: " . $sql . "<br>" . $conn->error);
               }            
           }      
       }
