@@ -10,10 +10,10 @@ function getChannelPage($user_id){
      $isLoggedIn = $_SESSION['isLoggedIn'];
 
      $html = "";
-     
+
      if($isLoggedIn && $user_id === $current_user_id){
           //gets user's name
-          $sql = "SELECT `first_name` FROM Account WHERE `user_id`=\"$user_id\"";
+          $sql = "SELECT `first_name` FROM Account WHERE `user_id`=\"$current_user_id\"";
           $result = $conn->query($sql);
           $row = $result->fetch_assoc();
           $name = $row["first_name"];
@@ -21,12 +21,31 @@ function getChannelPage($user_id){
           $html .= "<div class=\"welcome\" style=\"padding-left: 20px\">";
           $html .= "<h2>Hello $name!</h2>";
           $html .= "</div>";
+     } else {
+          // displays owner and subscribe button
+          $sql = "SELECT `first_name`, `last_name` FROM Account WHERE `user_id`=\"$user_id\"";
+          $result = $conn->query($sql);
+          $row = $result->fetch_assoc();
+          $fullname = $row["first_name"] . " " . $row['last_name'];
+
+          $html .= "<div style=\"width: 90%; margin-left: 5%;\" class=\"media-header\">";
+          $html .= "<div class=\"media-header-left\">";
+          $html .= "<img style=\"float: left; width: 40px; height: 40px\" src=\"../media/profile-icon.png\">";
+          $html .= "<h3 style=\"float: left; margin-left: 5px\">$fullname</h3>";
+
+          $html .= <<< HEAD
+               </div>
+               <div class="media-header-right">
+                    <a href="" >Subscribe</a>
+               </div>
+          </div>
+          HEAD;
      }
 
      $html .= <<< PAGE
      <div class="home">
-       <div class="row">
-            <h3>My Uploads</h3>
+       <div style="float: left" class="row">
+            <h3>Uploads</h3>
      PAGE;
 
      //sorts and displays media uploaded by current user and sorted by date
@@ -50,7 +69,7 @@ function getChannelPage($user_id){
 
      $html .= <<< PAGE
        </div>
-       <div class="row">
+       <div style="float: left" class="row">
             <h3>Favorites </h3>
             <img class="media" src="../media/image-placeholder.png" alt="Image Placeholder">
             <img class="media" src="../media/video-placeholder.png" alt="Video Placeholder">

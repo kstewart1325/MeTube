@@ -55,7 +55,7 @@ if(!$isLoggedIn){
     $user_id = $_SESSION['user_id'];
     $html .= "<a class=\"link\" href=\"index.php?page=channel&id=$user_id\">Account</a>";
     $html .= "<a class=\"link\" href=\"upload.php\">Upload</a>";
-    $html .= "<a class=\"link\" href=\"\">Settings</a>";
+    $html .= "<a class=\"link\" href=\"profile_update.php\">Settings</a>";
     $html .= "<a class=\"link\" href=\"index.php?page=logout\">Log-out</a>";
 }
 

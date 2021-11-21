@@ -87,6 +87,7 @@
 .row {
     overflow: hidden;
     padding-left: 20px;
+    float: left;
 }
 
 .row .media {
