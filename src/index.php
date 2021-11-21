@@ -4,6 +4,7 @@
 include 'home.php';
 include 'channel.php';
 include 'media.php';
+include 'search.php';
 
 $path = "MeTube/src/";
 $url = "http://localhost:8070/";
@@ -42,7 +43,9 @@ $html = <<< PAGE
             <a href="" class="logo">MeTube</a>
         </div>
         <div class="header-middle">
-            <input type="text" placeholder="Search...">
+            <form class="form-inline" method="GET" action="search.php">
+					<input type="text" class="form-control" placeholder="Search here..." name="content" required="required"/>
+			</form>
         </div>
         <div class="header-right">
         <a class="active" class="link" style="margin-right: 2px" href="index.php?page=home">Home</a>
@@ -74,6 +77,8 @@ if($currentPage === "home"){
     unset($_SESSION['isLoggedIn']);
     unset($_SESSION['id']);
     header('Location: '. $url . $path . 'index.php');
+}else if($currentPage === "search"){
+    $html .= $search_html;
 }
 
 $html .= <<< PAGE
