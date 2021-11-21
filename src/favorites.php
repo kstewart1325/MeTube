@@ -1,36 +1,18 @@
-<!-- 
-    Contacts page 
-    Allow users to organize their contacts into a contact list, 
-    to (1) add a user, and to (2) remove a user from their contact lists. 
-    BONUS: Allow users to organize their contacts into different categories.
--->
 
 <?php
   $path = "MeTube/src/index.php";
   $url = "http://localhost:8070/";
 
-  include 'db_connection.php';
+  include_once 'db_connection.php';
   $conn = OpenCon();
 
   $session_user = $_SESSION['user_id'];
+  //$session_user = 2;
   
   $removed = false;
   $error_message = "";
 
-  $html = <<< PAGE
-      <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Playlists</title>
-          <style>
-            table, th, td {
-              border: 1px solid black;
-              border-collapse: collapse;
-            }
-          </style>
-        </head>
-        <body>
-    PAGE;
+  $fav_html = "";
   
   if($_SERVER['REQUEST_METHOD']=="POST"){
 
@@ -41,9 +23,9 @@
 
         if ($result === TRUE) {
           $error_message = "<br>Media removed from Favorites.<br>";
-          $subpage = true;
+          header('Location: '. $url . $path . 'index.php?page=favorites&msg=' . $error_message);
         } else {
-          echo("Error: " . $sql . "<br>" . $conn->error);
+          $fav_html .= "Error: $sql <br> $conn->error";
         } 
     
     } 
@@ -68,7 +50,6 @@
     // FIX THIS
     $pl = "fav";
     if ($result2 === TRUE) {
-        // $error_message = "<br>$playlist added to your playlists.<br>";
         header('Location: '. $url . $path . '?page=media&success=true&list=' . $pl);
     } else {
         header('Location: '. $url . $path . '?page=media&success=false&list=' . $pl);
@@ -79,12 +60,12 @@
   // queries existing playlists for the current user
   $sql = "SELECT media_id FROM Favorites WHERE user_id=\"$session_user\"";
   $result = $conn->query($sql);
-  $html .= "<h3><u>Your Favorites</u></h3>";
+  $fav_html .= "<h3><u>Your Favorites</u></h3>";
   
   // print out into a table v
   if ($result->num_rows > 0) {
 
-      $html .= <<< PAGE
+      $fav_html .= <<< PAGE
           <table style=\"width:50%\">
           <colgroup>
               <col span="1" style="width: 15%;">
@@ -103,8 +84,8 @@
           
           $mname = $row2['media_title'];
           // make mname a link to the mediafile page
-          $html .= <<< PAGE
-              <tr><td><form method="post" name="manage_media" id="manage_media">
+          $fav_html .= <<< PAGE
+              <tr><td><form action="favorites.php" method="post" name="manage_media" id="manage_media">
                               <fieldset>
                               <input type="submit" name="removeMedia" value="remove" /> 
                               <input type="hidden" id="m_id" name="m_id" value="$mid"/>
@@ -113,17 +94,10 @@
           PAGE;
 
       }
-      $html .= "</table><br>";
+      $fav_html .= "</table><br>";
   } else {
-      $html .= "You have no Favorites.";
+      $fav_html .= "You have no Favorites.";
   }
-
-  $html .= <<< PAGE
-    </body>
-    </html>
-  PAGE;
-
-  echo $html;
   
   CloseCon($conn);
 

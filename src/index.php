@@ -4,6 +4,9 @@
 include 'home.php';
 include 'channel.php';
 include 'media.php';
+include 'playlists.php';
+include 'contacts.php';
+include 'favorites.php';
 
 $path = "MeTube/src/";
 $url = "http://localhost:8070/";
@@ -18,6 +21,7 @@ if(!isset($_SESSION['isLoggedIn'])){
 $isLoggedIn = $_SESSION['isLoggedIn'];
 $currentPage = "home";
 $currentMedia = "";
+$currentMsg = "";
 
 if($_SERVER['REQUEST_METHOD']=="GET"){
     if(isset($_GET['page'])){
@@ -26,6 +30,10 @@ if($_SERVER['REQUEST_METHOD']=="GET"){
 
     if(isset($_GET['id'])){
         $currentMedia = $_GET['id'];
+    }
+
+    if(isset($_GET['msg'])){
+        $currentMsg = $_GET['msg'];
     }
 }
 
@@ -64,6 +72,7 @@ $html .= <<< PAGE
     <div style="margin-bottom: 15px; margin-top: 15px;" class="page">
 PAGE;
 
+
 if($currentPage === "home"){
     $html .= getHomePage();
 } else if($currentPage === "channel"){
@@ -74,6 +83,15 @@ if($currentPage === "home"){
     unset($_SESSION['isLoggedIn']);
     unset($_SESSION['id']);
     header('Location: '. $url . $path . 'index.php');
+}else if($currentPage === "playlists"){
+    $html .= "<i>$currentMsg</i><br>";
+    $html .= $play_html;
+}else if($currentPage === "contacts"){
+    $html .= "<i>$currentMsg</i><br>";
+    $html .= $contacts_html;
+}else if($currentPage === "favorites"){
+    $html .= "<i>$currentMsg</i><br>";
+    $html .= $fav_html;
 }
 
 $html .= <<< PAGE
