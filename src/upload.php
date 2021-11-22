@@ -1,65 +1,87 @@
 <?php
-// script to pull category options
 
 $path = "MeTube/src/";
 $url = "http://localhost:8070/";
 
 if(!session_id()) session_start();
 
-include 'db_connection.php';
+include_once 'db_connection.php';
 $conn = OpenCon();
 
 $resubmit = false;
 $error_message = "";
+$allowedExtensions = array("jpg", "jpeg", "gif", "png", "mp3", "mp4", "wma");
+$allowedTypes = array("image/jpeg", "image/pjpeg", "image/png", "image/gif", "audio/mp3", "video/mp4", "audio/wma");
 
 if($_SERVER['REQUEST_METHOD']=="POST"){
-  //stores data from form
-  $file = $_FILES['mediafile'];
-  $filesize = $_FILES['mediafile']['size'];
-  $filetype = $_FILES['mediafile']['type'];
+  
 
-  $title = $_POST['title'];
-  $category = $_POST['category'];
-  $desc = $_POST['description'];
-  $keywords = $_POST['keywords'];
-
-  //checks if values are empty, ask them to resubmit if not
-  if(empty($file) || empty($title) || $category==="blank" || empty($desc) || empty($keywords)){
-    $error_message = "<br>Some fields left blank. Please fill out entire form.<br>";
-    $resubmit = true;
-  }
-
-  // adds info to 'Mediafiles' database
-  if($resubmit === false){
-    $user_id = $_SESSION['user_id'];
-
-    //checks if filename already exists
-    $sql = "SELECT `media_title` FROM Mediafiles WHERE `media_title`=\"$title\" LIMIT 0 , 30";
-    $result = $conn->query($sql);
-
-    if($result->num_rows === 0) {
-      //calculates appropriate media_id
-      $id = 0;
-      $sql = "SELECT MAX(media_id) AS id FROM Mediafiles";
-      $result = $conn->query($sql);
-      if($result->num_rows > 0) {
-          $row = $result->fetch_assoc();
-          $id = $row["id"] + 1;
-      }
-
-      $sql = "INSERT INTO Mediafiles VALUES 
-      ('$id', '$user_id', '$title', '$filetype', '$filesize', '$category', CURRENT_TIMESTAMP, '0', '$desc', '$file')";
-      $result = $conn->query($sql);
-
-      if ($result === TRUE) {
-          header('Location: '. $url . $path . 'index.php?page=channel');
-      } else {
-          $echo("Error: " . $sql . "<br>" . $conn->error);
-      }
-    } else {
-      $error_message = "<br><br>Media title already exists. Please choose another.<br>";
+  if(isset($_POST['upload'])){
+    //stores data from form
+    $file = $_FILES['mediafile']['tmp_name'];
+    $title = $_POST['title'];
+    $category = $_POST['category'];
+    $desc = $_POST['description'];
+    $keywords = $_POST['keywords'];
+    
+    //checks if values are empty or invalid, ask them to resubmit if not
+    if(!is_uploaded_file($file) || empty($title) || $category==="blank" || empty($desc) || empty($keywords)){
+      $error_message = "<br>Some fields left blank. Please fill out entire form.<br>";
       $resubmit = true;
     }
+
+    // adds info to 'Mediafiles' database
+    if($resubmit === false){
+      //stores file data and properties
+      $target_dir = "../uploads/";
+      $target_file = $target_dir . basename($_FILES['mediafile']['name']);
+      $fileExtension = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+      $fileType = $_FILES['mediafile']['type'];
+      $fileSize = $_FILES['mediafile']['size'];
+
+      //checks if media type is valid
+      if(in_array($fileExtension, $allowedExtensions) && in_array($fileType, $allowedTypes)){
+        //checks if file already exists
+        if(!file_exists($target_file)) {
+          //calculates appropriate media_id
+          $media_id = 0;
+          $sql = "SELECT MAX(media_id) AS id FROM Mediafiles";
+          $result = $conn->query($sql);
+          if($result->num_rows > 0) {
+              $row = $result->fetch_assoc();
+              $media_id = $row["id"] + 1;
+          }
+
+          //stores uploaded file in uploads folder
+          if(move_uploaded_file($file, $target_file)){
+            $user_id = $_SESSION['user_id'];
+
+            //stores file info into database
+            $sql = "INSERT INTO Mediafiles VALUES 
+            ('$media_id', '$user_id', \"$title\", '$fileType', '$fileSize', '$category', CURRENT_TIMESTAMP, '0', \"$desc\", '$target_file', '$keywords')";
+            $result = $conn->query($sql);
+
+            if ($result === TRUE) {
+                header('Location: '. $url . $path . 'index.php?page=channel&id=' . $user_id);
+            } else {
+                echo("Error: " . $sql . "<br>" . $conn->error);
+            }
+          } else {
+            $error_message = "<br><br>Error uploading media.<br>";
+            $resubmit = true;
+          }
+        } else {
+          $error_message = "<br><br>Media already uploaded. Please choose another.<br>";
+          $resubmit = true;
+        }
+      } else {
+        $error_message = "<br><br>Invalid media type. Please choose another.<br>";
+        $resubmit = true;
+      }
+    }
+  } else {
+    $error_message = "<br><br>Error uploading file.<br>";
+    $resubmit = true;
   }
 }
 
@@ -84,7 +106,6 @@ $html = <<< PAGE
         <input type="text" id="title" name="title" /><br />
       </p>
       <p>
-        <!-- THESE EVENTUALLY NEED TO BE STORED IN A DB TABLE AND QUERIED TO POPULATE -->
         <label for="category">Category: </label>
         <select name="category">
         <option value="blank">     </option>
@@ -113,11 +134,11 @@ $html .= <<< PAGE
           Separate keywords with a comma (",").<br>
         <TEXTAREA name="keywords" rows="2" cols="80"></TEXTAREA>
       </p>          
-      <p><input type="submit" value="Upload" /> <input type="reset" value="Clear"/></p>
+      <p><input type="submit" name="upload" value="Upload" /> <input type="reset" value="Clear"/></p>
     </fieldset>
 PAGE;
 
-//displays signup page with appropriate error message
+//displays upload page with appropriate error message
 if($resubmit === true){
   $html .= $error_message;
 }
