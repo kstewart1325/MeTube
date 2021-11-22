@@ -1,6 +1,6 @@
 <?php 
 
-function getChannelPage($user_id){
+function getChannelPage($user_id, $msg){
      include_once 'db_connection.php';
 
      $conn = openCon();
@@ -11,6 +11,11 @@ function getChannelPage($user_id){
 
      $html = "";
      $isSubscribed = false;
+     $error_message = "";
+
+     if($msg === "sub"){
+         $error_message = "You must be logged in to subscribe.";
+     }
 
      // checks if user is subscibed to channel
      if($isLoggedIn && $current_user_id != $user_id){
@@ -38,6 +43,7 @@ function getChannelPage($user_id){
                <h3 style="float: left; margin-left: 5px">$fullname</h3>
           </div>
           <div style="float: right; width: 70%;" class="media-header-right">
+          <a style="float: right; border: 0px;" href="login.php">$error_message</a>
      HEAD;
 
      if($isLoggedIn && $current_user_id == $user_id){
@@ -55,11 +61,13 @@ function getChannelPage($user_id){
                     <p>Username: $username</p>
                </div>
           HEAD;
-     } else if($isSubscribed){
-          $html .= "<a style=\"background-color: dodgerblue; color: white;\" href=\"subscribe.php?page=channel&id=$user_id\" >Subscribed</a>";
-     } else {
-          $html .= "<a href=\"subscribe.php?page=channel&id=$user_id\" >Subscribe</a>";
-     }
+     } else if(!$isLoggedIn){
+          $html .= "<a style=\"float: right;\" href=\"index.php?page=channel&id=$user_id&msg=sub\">Subscribe</a>";
+      } else if($isSubscribed){
+          $html .= "<a style=\"float: right; background-color: dodgerblue; color: white;\" href=\"subscribe.php?page=channel&id=$user_id\" >Subscribed</a>";
+      } else {
+          $html .= "<a style=\"float: right;\" href=\"subscribe.php?page=channel&id=$user_id\" >Subscribe</a>";
+      }
      
      $html .= <<< PAGE
           </div>
