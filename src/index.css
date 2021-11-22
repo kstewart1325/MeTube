@@ -218,3 +218,20 @@ video {
     margin-left: 2px;
     margin-right: 2px;
 }
+
+/* Comments */
+
+.comment {
+    border: 1px solid black;
+    border-radius: 4px;
+}
+.comment-header {
+    float: left;
+    width: 80%;
+    height: 30px;
+}
+
+.comment-data {
+    float: left;
+    margin-left: 25px;
+}
