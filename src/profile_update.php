@@ -17,6 +17,7 @@ $resubmit = false;
 $submitted = false;
 $error_message = "";
 
+if(!session_id()) session_start();
 $session_user = $_SESSION['user_id'];
 
 if($_SERVER['REQUEST_METHOD']=="POST"){
@@ -104,7 +105,7 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
 CloseCon($conn);
 
 $html = <<< PAGE
-                                <!DOCTYPE html>
+    <!DOCTYPE html>
     <html>
     <head>
         <title>Profile Update</title>
@@ -113,6 +114,7 @@ $html = <<< PAGE
         <span id="profile_update">
         <form action="profile_update.php" method="post">
             <fieldset>
+            <p>Fill in the fields you wish to update.</p>
             <legend>Update Profile Information</legend>
             <p>
                 <label for="first_name">First Name: </label>
@@ -146,6 +148,7 @@ if($resubmit === true){
 }
 if($submitted === true){
     $html .= "Profile successfully updated";
+    header('Location: '. $url . $path . 'index.php?page=channel&id=' . $_SESSION['user_id']);
 }
 
 $html .= <<< PAGE

@@ -38,7 +38,7 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
             //sets session variables and switches to index
             $_SESSION['isLoggedIn'] = true;
             $_SESSION['user_id'] = $id;
-            header('Location: '. $url . $path . 'index.php?page=channel');
+            header('Location: '. $url . $path . 'index.php?page=channel&id=' . $_SESSION['user_id']);
         } else {
             $error_message = "<br><br>Incorrect username or password. Please try again.<br>";
             $resubmit = true;

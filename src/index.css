@@ -87,6 +87,7 @@
 .row {
     overflow: hidden;
     padding-left: 20px;
+    float: left;
 }
 
 .row .media {
@@ -184,6 +185,11 @@ video {
     border-radius: 4px;
     margin-left: 2px;
     margin-right: 2px;
+}
+
+.media-header-left a.active {
+    background-color: dodgerblue;
+    color: white;
 }
 
 .media-header-left {
