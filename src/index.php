@@ -4,11 +4,6 @@
 include 'home.php';
 include 'channel.php';
 include 'media.php';
-include 'search.php';
-include 'playlists.php';
-include 'contacts.php';
-include 'favorites.php';
-
 
 $path = "MeTube/src/";
 $url = "http://localhost:8070/";
@@ -22,8 +17,7 @@ if(!isset($_SESSION['isLoggedIn'])){
 
 $isLoggedIn = $_SESSION['isLoggedIn'];
 $currentPage = "home";
-$currentMedia = "";
-$currentMsg = "";
+$id = "";
 
 if($_SERVER['REQUEST_METHOD']=="GET"){
     if(isset($_GET['page'])){
@@ -31,11 +25,7 @@ if($_SERVER['REQUEST_METHOD']=="GET"){
     }
 
     if(isset($_GET['id'])){
-        $currentMedia = $_GET['id'];
-    }
-
-    if(isset($_GET['msg'])){
-        $currentMsg = $_GET['msg'];
+        $id = $_GET['id'];
     }
 }
 
@@ -52,9 +42,7 @@ $html = <<< PAGE
             <a href="" class="logo">MeTube</a>
         </div>
         <div class="header-middle">
-            <form class="form-inline" method="GET" action="search.php">
-					<input type="text" class="form-control" placeholder="Search here..." name="content" required="required"/>
-			</form>
+            <input type="text" placeholder="Search...">
         </div>
         <div class="header-right">
         <a class="active" class="link" style="margin-right: 2px" href="index.php?page=home">Home</a>
@@ -64,10 +52,13 @@ if(!$isLoggedIn){
     $html .= "<a class=\"link\" href=\"login.php\">Log-in</a>";
 
 } else {
-    $html .= "<a class=\"link\" href=\"index.php?page=channel\">Account</a>";
-    $html .= "<a class=\"link\" href=\"upload.php\">Upload</a>";
-    $html .= "<a class=\"link\" href=\"\">Settings</a>";
-    $html .= "<a class=\"link\" href=\"index.php?page=logout\">Log-out</a>";
+    $user_id = $_SESSION['user_id'];
+    $html .= <<< PAGE
+    <a class="link" href="index.php?page=channel&id=$user_id">Account</a>
+    <a class="link" href="upload.php">Upload</a>
+    <a class="link" href="profile_update.php">Settings</a>
+    <a class="link" href="index.php?page=logout">Log-out</a>
+    PAGE;
 }
 
 $html .= <<< PAGE
@@ -76,28 +67,16 @@ $html .= <<< PAGE
     <div style="margin-bottom: 15px; margin-top: 15px;" class="page">
 PAGE;
 
-
 if($currentPage === "home"){
     $html .= getHomePage();
 } else if($currentPage === "channel"){
-    $html .= getChannelPage();
+    $html .= getChannelPage($id);
 } else if($currentPage === "media"){
-    $html .= getMediaPage($currentMedia);
+    $html .= getMediaPage($id);
 } else if($currentPage === "logout") {
     unset($_SESSION['isLoggedIn']);
     unset($_SESSION['id']);
     header('Location: '. $url . $path . 'index.php');
-}else if($currentPage === "search"){
-    $html .= $search_html;
-}else if($currentPage === "playlists"){
-    $html .= "<i>$currentMsg</i><br>";
-    $html .= $play_html;
-}else if($currentPage === "contacts"){
-    $html .= "<i>$currentMsg</i><br>";
-    $html .= $contacts_html;
-}else if($currentPage === "favorites"){
-    $html .= "<i>$currentMsg</i><br>";
-    $html .= $fav_html;
 }
 
 $html .= <<< PAGE

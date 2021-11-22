@@ -59,7 +59,7 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
           $result = $conn->query($sql);
 
           if ($result === TRUE) {
-              header('Location: '. $url . $path . 'index.php?page=channel');
+              header('Location: '. $url . $path . 'index.php?page=channel&id=' . $user_id);
           } else {
               echo("Error: " . $sql . "<br>" . $conn->error);
           }

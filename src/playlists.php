@@ -1,23 +1,38 @@
 <!-- 
-    Playlists page 
-    Allow users to organize mediafiles into playlists.
+    Contacts page 
+    Allow users to organize their contacts into a contact list, 
+    to (1) add a user, and to (2) remove a user from their contact lists. 
+    BONUS: Allow users to organize their contacts into different categories.
 -->
 
 <?php
-  $path = "MeTube/src/";
+  $path = "MeTube/src/index.php";
   $url = "http://localhost:8070/";
 
-  include_once 'db_connection.php';
+  include 'db_connection.php';
   $conn = OpenCon();
 
   $session_user = $_SESSION['user_id'];
-  //$session_user = 2;
-
+  
   $resubmit = false;
   $error_message = "";
-  $subpage = false;
-  $play_html = "";
 
+  $subpage = false;
+
+  $html = <<< PAGE
+      <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Playlists</title>
+          <style>
+            table, th, td {
+              border: 1px solid black;
+              border-collapse: collapse;
+            }
+          </style>
+        </head>
+        <body>
+    PAGE;
   
   if($_SERVER['REQUEST_METHOD']=="POST"){
       //stores data from form
@@ -56,10 +71,10 @@
             $result = $conn->query($sql);
 
             if ($result === TRUE) {
-                $error_message = "<br>Playlist <i>$playlist</i> deleted. ";
-                header('Location: '. $url . $path . 'index.php?page=playlists&msg=' . $error_message);
+                //$error_message = "<br>Playlist <i>$playlist</i> deleted. ";
+                header('Location: '. $url . $path . '?page=playlists');
             } else {
-                $play_html .= "Error: $sql <br> $conn->error";
+                echo("Error: " . $sql . "<br>" . $conn->error);
             }
 
           }else{
@@ -87,7 +102,7 @@
                 $error_message = "<br>$playlist renamed to $nname.<br>";
                 $subpage = true;
               } else {
-                $play_html .= "Error: $sql3 <br> $conn->error";
+                echo("Error: " . $sql3 . "<br>" . $conn->error);
               } 
           }
 
@@ -100,7 +115,7 @@
           $error_message = "<br>Media removed from playlist.<br>";
           $subpage = true;
         } else {
-          $play_html .= "Error: $sql <br> $conn->error";
+          echo("Error: " . $sql3 . "<br>" . $conn->error);
         } 
         
       }else if($resubmit === false){
@@ -129,18 +144,12 @@
       
               if ($result3 === TRUE) {
                   $error_message = "<br>$playlist added to your playlists.<br>";
-                  header('Location: '. $url . $path . 'index.php?page=playlists&msg=' . $error_message);
               } else {
-                  $play_html .= "Error: $sql <br> $conn->error";
+                  echo("Error: " . $sql . "<br>" . $conn->error);
               }            
           }      
       } 
-      if($resubmit === true){
-        header('Location: '. $url . $path . 'index.php?page=playlists&msg=' . $error_message);
-      }
   }
-
- 
   
 // get request to add media to a playlist from a mediafile page
   if(isset($_GET["file"]) && isset($_GET["list"])){
@@ -179,14 +188,14 @@
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $pname = $row['p_name'];
-        $play_html .= "<p><h3>Playlist $pname</h3></p>";
+        $html .= "<p><h3>Playlist $pname</h3></p>";
 
         // query media file info from the playlist
         $sql2 = "SELECT Playlist_Data.media_id, Mediafiles.media_title FROM (Playlist_Data INNER JOIN Mediafiles ON Playlist_Data.media_id = Mediafiles.media_id) WHERE Playlist_Data.list_id=$playlist";
         $result2 = $conn->query($sql2);
         
         if ($result2->num_rows > 0) {
-            $play_html .= <<< PAGE
+            $html .= <<< PAGE
                 <table style=\"width:50%\">
                 <colgroup>
                     <col span="1" style="width: 15%;">
@@ -198,8 +207,8 @@
                 $mid = $row2['media_id'];
                 $mname = $row2['media_title'];
 
-                $play_html .= <<< PAGE
-                    <tr><td><form action="playlists.php" method="post" name="manage_media" id="manage_media">
+                $html .= <<< PAGE
+                    <tr><td><form method="post" name="manage_media" id="manage_media">
                                     <fieldset>
                                     <input type="submit" name="removeMedia" value="remove" /> 
                                     <input type="hidden" id="m_id" name="m_id" value="$mid"/>
@@ -209,13 +218,13 @@
                     </form></td><td><a href=\"/MeTube/src/index.php?page=media&id=$mid\">$mname</a></td></tr>
                 PAGE; 
             }
-            $play_html .= "</table><br>";
+            $html .= "</table><br>";
         }else{
-            $play_html .= "<p><i>Playlist is empty</i></p><p>$error_message</p>";
+            $html .= "<p><i>Playlist is empty</i></p><p>$error_message</p>";
         }
         
-        $play_html .= <<< PAGE
-                <form action="playlists.php" method="post" name="manage_playlist" id="manage_playlist" >
+        $html .= <<< PAGE
+                <form method="post" name="manage_playlist" id="manage_playlist" >
                     <fieldset>
                     <p>
                         <label for="new_name">New Name: </label>
@@ -235,53 +244,59 @@
         echo "Playlist does not exist.";
     }
 
-    $play_html .= "<br><a href = \"index.php?page=playlists\">Return to Playlists</a>";
-
+    $html .= "<br><a href = \"playlists.php\">Return to Playlists</a>";
 // displays default page with all playlists for a user listed
   }else if(!($subpage)){
+        $html = <<< PAGE
+        <span id="playlist_form">
+        <form method="post" name="create_playlist_form" id="create_playlist_form">
+            <fieldset>
+            
+            <p>
+                <label for="p_name">Playlist Name: </label>
+                <input type="text" id="p_name" name="p_name" /><br />
+            </p>
+            <p>
+                <input type="submit" name="createPlaylist" value="Create New Playlist" /> 
+                <input type="submit" name="removePlaylist" value="Delete Playlist" />
+                <br><i>$error_message</i>
+            </p>
+            </fieldset>
+        </form>
+        </span>
+        PAGE;
 
-      $play_html = <<< PAGE
-      <span id="playlist_form">
-      <form action="playlists.php" method="post" name="create_playlist_form" id="create_playlist_form">
-          <fieldset>
-          
-          <p>
-              <label for="p_name">Playlist Name: </label>
-              <input type="text" id="p_name" name="p_name" /><br />
-          </p>
-          <p>
-              <input type="submit" name="createPlaylist" value="Create New Playlist" /> 
-              <input type="submit" name="removePlaylist" value="Delete Playlist" />
-          </p>
-          </fieldset>
-      </form>
-      </span>
-      PAGE;
-
-      // queries existing playlists for the current user
-      $sql = "SELECT list_id FROM Playlists WHERE user_id=\"$session_user\"";
-      $result = $conn->query($sql);
-      $play_html .= "<h3><u>Your Playlists</u></h3><p>Click a playlist to view and manage.</p>";
-      
-      // print out into a table v
-      if ($result->num_rows > 0) {
-          $play_html .= "<ul>";
-          // get each playlist name and print 
-          while($row = $result->fetch_assoc()) {
-              $pid = $row['list_id'];
-          
-              $sql2 = "SELECT p_name FROM Playlists WHERE list_id=\"$pid\"";
-              $result2 = $conn->query($sql2);
-              $row2 = $result2->fetch_assoc();
-              
-              $play_html .= "<li><a href=\"/MeTube/src/index.php?page=playlists&list=$pid\">".$row2["p_name"]." </a></li>";
-          }
-          $play_html .= "<ul>";
-      } else {
-          $play_html .= "You have no Playlists.";
-      }
+        // queries existing playlists for the current user
+        $sql = "SELECT list_id FROM Playlists WHERE user_id=\"$session_user\"";
+        $result = $conn->query($sql);
+        $html .= "<h3><u>Your Playlists</u></h3><p>Click a playlist to view and manage.</p>";
+        
+        // print out into a table v
+        if ($result->num_rows > 0) {
+            $html .= "<ul>";
+            // get each playlist name and print 
+            while($row = $result->fetch_assoc()) {
+                $pid = $row['list_id'];
+            
+                $sql2 = "SELECT p_name FROM Playlists WHERE list_id=\"$pid\"";
+                $result2 = $conn->query($sql2);
+                $row2 = $result2->fetch_assoc();
+                
+                $html .= "<li><a href=\"/MeTube/src/index.php?page=playlists&list=$pid\">".$row2["p_name"]." </a></li>";
+            }
+            $html .= "<ul>";
+        } else {
+            $html .= "You have no Playlists.";
+        }
   }
 
+  $html .= <<< PAGE
+    </body>
+    </html>
+  PAGE;
+
+  echo $html;
+  
   CloseCon($conn);
 
 ?>

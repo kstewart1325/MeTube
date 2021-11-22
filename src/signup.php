@@ -77,6 +77,7 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
 
         $sql = "INSERT INTO Account VALUES 
         ('$id', '$firstname', '$lastname', '$username', '$email', CURRENT_TIMESTAMP, '$birthday', '$password', '0')";
+
         $result = $conn->query($sql);
 
         if ($result === TRUE) {
