@@ -9,6 +9,14 @@
 
 <?php
 
+if(!session_id()) session_start();
+
+$current_user_id = $_SESSION['user_id'];
+$isLoggedIn = $_SESSION['isLoggedIn'];
+
+//test variable below
+//$current_user_id = 2;
+
 $path = "MeTube/src/";
 $url = "http://localhost:8070/";
 
@@ -36,24 +44,75 @@ $html = <<< PAGE
 PAGE;
 
 
-//$session_user = $_SESSION['user_id'];
-$session_user = 2;
 
+if(isset($_POST['newMessage'])){
+  $sender = $current_user_id;
+  $username = $_POST['username'];
+  $message = $_POST['message'];
+  $id = 0;
 
+  //check if the conversation has already been started
+  $sql = "SELECT Messages.Conversation_ID 
+  FROM (
+    Messages 
+    INNER JOIN Account ON Messages.Receiver_ID = Account.user_id
+    )
+    WHERE Account.username = \"$username\"
+    LIMIT 1";
+
+  $result = $conn->query($sql);
+
+  if($result->num_rows > 0){
+    $row = $result->fetch_assoc();
+    $id = $row['Conversation_ID'];
+  }
+  //assign a new conversation id if it's a new conversation
+  else{
+    $sql = "SELECT MAX(Conversation_ID) AS id FROM Messages";
+    $result = $conn->query($sql);
+    
+    if($result->num_rows > 0) {
+      $row = $result->fetch_assoc();
+      $id = $row["id"] + 1;
+      echo "New Conversation ID: $id";
+    }
+  }
+
+  //get the user id for the account we are sending it to
+  $sql = "SELECT user_id FROM Account WHERE username=\"$username\"";
+  $result = $conn->query($sql);
+
+  if($result->num_rows > 0){
+    $row = $result->fetch_assoc();
+    $receiver = $row['user_id'];
+  }
+
+  $sql = "INSERT INTO Messages VALUES 
+  ('$sender', '$receiver', '$message', '$id', CURRENT_TIMESTAMP)";
+  $result = $conn->query($sql);
+
+  if ($result === TRUE) {
+      header('Location: '. $url . $path . 'inbox.php');
+      $html .= "Message Sent";
+  } else {
+      echo("Error: " . $sql . "<br>" . $conn->error);
+  }
+}
 
 if(isset($_GET['box'])){
   $subpage = true;
   $box = $_GET['box'];
 
+  $html .= "<a href=\"/inbox.php\">Return to mailbox</a> <p></p>";
+
   //inbox 
   if($box === 'in'){
-    $html .= "inbox";
     $sql = "SELECT Account.username, Messages.Receiver_ID, Messages.Message
     FROM (
       Messages 
       INNER JOIN Account ON Messages.Sender_ID = Account.user_id
     ) 
-    WHERE Receiver_ID =\"$session_user\" 
+    WHERE Receiver_ID =\"$current_user_id\" 
     ORDER BY Messages.Timestamp DESC 
     LIMIT 0 , 30";
     $result = $conn->query($sql);
@@ -75,16 +134,16 @@ if(isset($_GET['box'])){
     else {
       $html .= "0 results";
     } 
+    $html .= "<p><a href=/inbox.php?box=new>Reply to a message</a></p> ";
   }
   //outbox
   else if($box === 'out'){
-    $html .= "outbox";
     $sql = "SELECT Account.username, Messages.Receiver_ID, Messages.Message
     FROM (
       Messages 
       INNER JOIN Account ON Messages.Receiver_ID = Account.user_id
     ) 
-    WHERE Sender_ID =\"$session_user\" 
+    WHERE Sender_ID =\"$current_user_id\" 
     ORDER BY Messages.Timestamp DESC 
     LIMIT 0 , 30";
     $result = $conn->query($sql);
@@ -109,9 +168,8 @@ if(isset($_GET['box'])){
   }
   //new message
   else if($box === 'new'){
-    $html .= "new";
     $html .= <<< PAGE
-    <form method="post" name="new_message" id="new_message" >
+    <form method="post" name="new_message" id="new_message" action="Inbox.php">
         <fieldset>
         <p>
             <label for="username">To: </label>
@@ -122,14 +180,12 @@ if(isset($_GET['box'])){
             <TEXTAREA name="message" rows="10" cols="80"></TEXTAREA>
         </p>
         <p>
-            <input type="submit" name="newMessage" value="New Message" />
-            <input type="hidden" id="convo_id" name="convo_id" value="$id"/>
+            <input type="submit" name="newMessage" value="Send Message" />
         </p>
         </fieldset>
     </form>
 PAGE;
   }
-  $html .= "<a href=\"/inbox.php\">Return to mailbox</a> ";
 }
 else{ 
   $html = <<< PAGE
