@@ -1,21 +1,13 @@
 
-
-
-
-
-
-
-
-
 <?php
 
 if(!session_id()) session_start();
 
-$current_user_id = $_SESSION['user_id'];
+//$current_user_id = $_SESSION['user_id'];
 $isLoggedIn = $_SESSION['isLoggedIn'];
 
 //test variable below
-//$current_user_id = 2;
+$current_user_id = 2;
 
 $path = "MeTube/src/";
 $url = "http://localhost:8070/";
@@ -26,7 +18,6 @@ $conn = OpenCon();
 $resubmit = false;
 $error_message = "";
 
-$subpage = false;
 
 $html = <<< PAGE
 <!DOCTYPE html>
@@ -99,15 +90,15 @@ if(isset($_POST['newMessage'])){
   }
 }
 
+
 if(isset($_GET['box'])){
-  $subpage = true;
   $box = $_GET['box'];
 
   $html .= "<a href=\"/inbox.php\">Return to mailbox</a> <p></p>";
 
   //inbox 
   if($box === 'in'){
-    $sql = "SELECT Account.username, Messages.Receiver_ID, Messages.Message
+    $sql = "SELECT Account.username, Messages.Receiver_ID, Messages.Message, Messages.Timestamp, Messages.Conversation_ID
     FROM (
       Messages 
       INNER JOIN Account ON Messages.Sender_ID = Account.user_id
@@ -119,26 +110,29 @@ if(isset($_GET['box'])){
     
 
     if ($result->num_rows > 0) {
-      $html .= "<table><tr><th>From</th><th>Message</th></tr>";
+      $html .= "<table><tr><th>Reply</th><th>To</th><th>Message</th><th>Time</th></tr>";
   
     // output data of each row
     while($row = $result->fetch_assoc()) {
       $receiver = $row['Receiver_ID'];
       $sender = $row['username'];
       $message = $row['Message'];
+      $time = $row['Timestamp'];
+      $id = $row['Conversation_ID'];
 
-      $html .= "<tr><td>$sender</td><td>$message</td></tr>";
+      $html .= "<tr><td><a href=\"inbox.php?reply=$sender\">Reply</a></td><td>$sender</td><td><a href=\"inbox.php?convo=$id\">$message</a></td><td>$time</td></tr>";
     }
     $html .= "</table>";
     } 
     else {
       $html .= "0 results";
-    } 
-    $html .= "<p><a href=/inbox.php?box=new>Reply to a message</a></p> ";
+    }
+
   }
+
   //outbox
   else if($box === 'out'){
-    $sql = "SELECT Account.username, Messages.Receiver_ID, Messages.Message
+    $sql = "SELECT Account.username, Messages.Receiver_ID, Messages.Message, Messages.Timestamp, Messages.Conversation_ID
     FROM (
       Messages 
       INNER JOIN Account ON Messages.Receiver_ID = Account.user_id
@@ -150,15 +144,17 @@ if(isset($_GET['box'])){
     
 
     if ($result->num_rows > 0) {
-      $html .= "<table><tr><th>To</th><th>Message</th></tr>";
+      $html .= "<table><tr><th>To</th><th>Message</th><th>Time</th></tr>";
   
     // output data of each row
     while($row = $result->fetch_assoc()) {
       $receiver = $row['Receiver_ID'];
       $sender = $row['username'];
       $message = $row['Message'];
+      $time = $row['Timestamp'];
+      $id = $row['Conversation_ID'];
 
-      $html .= "<tr><td>$sender</td><td>$message</td></tr>";
+      $html .= "<tr><td>$sender</td><td><a href=\"inbox.php?convo=$id\">$message</a></td><td>$time</td></tr>";
     }
     $html .= "</table>";
     } 
@@ -166,6 +162,7 @@ if(isset($_GET['box'])){
       $html .= "0 results";
     }
   }
+
   //new message
   else if($box === 'new'){
     $html .= <<< PAGE
@@ -184,9 +181,70 @@ if(isset($_GET['box'])){
         </p>
         </fieldset>
     </form>
-PAGE;
+    PAGE;
   }
 }
+
+//shows whole conversation's based on outbox
+else if(isset($_GET['convo'])){
+  $id = $_GET['convo'];
+
+  $sql = "SELECT Account.username, Messages.Receiver_ID, Messages.Message, Messages.Timestamp
+  FROM (
+    Messages 
+    INNER JOIN Account ON Messages.Sender_ID = Account.user_id
+  ) 
+  WHERE Conversation_ID =\"$id\" 
+  ORDER BY Messages.Timestamp ASC";
+
+  $result = $conn->query($sql);
+
+  $html .= "<a href=\"/inbox.php\">Return to mailbox</a> <p></p>";
+
+    
+
+  if ($result->num_rows > 0) {
+    $html .= "<table><tr><th>From</th><th>Message</th><th>Time</th></tr>";
+
+  // output data of each row
+  while($row = $result->fetch_assoc()) {
+    $receiver = $row['Receiver_ID'];
+    $sender = $row['username'];
+    $message = $row['Message'];
+    $time = $row['Timestamp'];
+
+    $html .= "<tr><td>$sender</td><td>$message<td>$time</td></tr>";
+  }
+    $html .= "</table>";
+  }  
+  else {
+    $html .= "0 results";
+  }
+}
+
+//replying to messages in the inbox
+else if(isset($_GET['reply'])){
+  $username = $_GET['reply'];
+
+  $html .= "<a href=\"/inbox.php\">Return to mailbox</a> <p></p>";
+
+  $html .= <<< PAGE
+  <form method="post" name="new_message" id="new_message" action="Inbox.php">
+      <fieldset>
+      <p>
+          <label for="message">Message: </label> <br>
+          <TEXTAREA name="message" rows="10" cols="80"></TEXTAREA>
+      </p>
+      <p>
+          <input type="hidden" name="username" value="$username" />
+
+          <input type="submit" name="newMessage" value="Send Message" />
+      </p>
+      </fieldset>
+  </form>
+  PAGE;
+}
+
 else{ 
   $html = <<< PAGE
   <span id="Message pick">
