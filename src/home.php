@@ -1,7 +1,7 @@
 <?php
 
 function getHomePage(){
-     include 'db_connection.php';
+     include_once 'db_connection.php';
 
      $conn = openCon();
 
