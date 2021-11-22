@@ -18,7 +18,6 @@ if(!isset($_SESSION['isLoggedIn'])){
 $isLoggedIn = $_SESSION['isLoggedIn'];
 $currentPage = "home";
 $currentMedia = "";
-$currentMsg = "";
 
 if($_SERVER['REQUEST_METHOD']=="GET"){
     if(isset($_GET['page'])){
@@ -27,10 +26,6 @@ if($_SERVER['REQUEST_METHOD']=="GET"){
 
     if(isset($_GET['id'])){
         $currentMedia = $_GET['id'];
-    }
-
-    if(isset($_GET['msg'])){
-        $currentMsg = $_GET['msg'];
     }
 }
 
@@ -68,7 +63,6 @@ $html .= <<< PAGE
     </div>
     <div style="margin-bottom: 15px; margin-top: 15px;" class="page">
 PAGE;
-
 
 if($currentPage === "home"){
     $html .= getHomePage();
