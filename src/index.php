@@ -17,7 +17,7 @@ if(!isset($_SESSION['isLoggedIn'])){
 
 $isLoggedIn = $_SESSION['isLoggedIn'];
 $currentPage = "home";
-$currentMedia = "";
+$id = "";
 
 if($_SERVER['REQUEST_METHOD']=="GET"){
     if(isset($_GET['page'])){
@@ -53,10 +53,12 @@ if(!$isLoggedIn){
 
 } else {
     $user_id = $_SESSION['user_id'];
-    $html .= "<a class=\"link\" href=\"index.php?page=channel&id=$user_id\">Account</a>";
-    $html .= "<a class=\"link\" href=\"upload.php\">Upload</a>";
-    $html .= "<a class=\"link\" href=\"profile_update.php\">Settings</a>";
-    $html .= "<a class=\"link\" href=\"index.php?page=logout\">Log-out</a>";
+    $html .= <<< PAGE
+    <a class="link" href="index.php?page=channel&id=$user_id">Account</a>
+    <a class="link" href="upload.php">Upload</a>
+    <a class="link" href="profile_update.php">Settings</a>
+    <a class="link" href="index.php?page=logout">Log-out</a>
+    PAGE;
 }
 
 $html .= <<< PAGE

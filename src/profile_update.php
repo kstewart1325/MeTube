@@ -105,7 +105,7 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
 CloseCon($conn);
 
 $html = <<< PAGE
-                                <!DOCTYPE html>
+    <!DOCTYPE html>
     <html>
     <head>
         <title>Profile Update</title>

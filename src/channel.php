@@ -10,39 +10,44 @@ function getChannelPage($user_id){
      $isLoggedIn = $_SESSION['isLoggedIn'];
 
      $html = "";
+     $isSubscribed = false;
 
-     if($isLoggedIn && $user_id === $current_user_id){
-          //gets user's name
-          $sql = "SELECT `first_name` FROM Account WHERE `user_id`=\"$current_user_id\"";
+     // checks if user is subscibed to channel
+     if($isLoggedIn && $current_user_id != $user_id){
+          $sql = "SELECT * FROM Subscriptions WHERE `channel`=\"$user_id\" AND `subscriber`=\"$current_user_id\"";
           $result = $conn->query($sql);
-          $row = $result->fetch_assoc();
-          $name = $row["first_name"];
-
-          $html .= "<div class=\"welcome\" style=\"padding-left: 20px\">";
-          $html .= "<h2>Hello $name!</h2>";
-          $html .= "</div>";
-     } else {
-          // displays owner and subscribe button
-          $sql = "SELECT `first_name`, `last_name` FROM Account WHERE `user_id`=\"$user_id\"";
-          $result = $conn->query($sql);
-          $row = $result->fetch_assoc();
-          $fullname = $row["first_name"] . " " . $row['last_name'];
-
-          $html .= "<div style=\"width: 90%; margin-left: 5%;\" class=\"media-header\">";
-          $html .= "<div class=\"media-header-left\">";
-          $html .= "<img style=\"float: left; width: 40px; height: 40px\" src=\"../media/profile-icon.png\">";
-          $html .= "<h3 style=\"float: left; margin-left: 5px\">$fullname</h3>";
-
-          $html .= <<< HEAD
-               </div>
-               <div class="media-header-right">
-                    <a href="" >Subscribe</a>
-               </div>
-          </div>
-          HEAD;
+          if($result->num_rows >0){
+               $isSubscribed = true;
+          }
      }
 
+     // displays owner and subscribe button if other user's channel
+     $sql = "SELECT `first_name`, `last_name`, `num_subs` FROM Account WHERE `user_id`=\"$user_id\"";
+     $result = $conn->query($sql);
+     $row = $result->fetch_assoc();
+     $fullname = $row["first_name"] . " " . $row['last_name'];
+     $num_subs = $row["num_subs"];
+
+     $html .= <<< HEAD
+     <div style="width: 90%; margin-left: 5%;" class="media-header">
+          <div class="media-header-left">
+               <img style="float: left; width: 40px; height: 40px" src="../media/profile-icon.png">
+               <h3 style="float: left; margin-left: 5px">$fullname</h3>
+          </div>
+          <div class="media-header-right">
+     HEAD;
+
+     if($isLoggedIn && $current_user_id == $user_id){
+          $html .= "<p>Subscribers: $num_subs";
+     } else if($isSubscribed){
+          $html .= "<a style=\"background-color: dodgerblue; color: white;\" href=\"subscribe.php?page=channel&id=$user_id\" >Subscribed</a>";
+     } else {
+          $html .= "<a href=\"subscribe.php?page=channel&id=$user_id\" >Subscribe</a>";
+     }
+     
      $html .= <<< PAGE
+          </div>
+     </div>
      <div class="home">
        <div style="float: left" class="row">
             <h3>Uploads</h3>
@@ -57,11 +62,13 @@ function getChannelPage($user_id){
                $desc = $row['description'];
                $media_id = $row['media_id'];
 
-               $html .= "<a href=\"index.php?page=media&id=$media_id\">";
-               $html .= "<div class=\"media\">";
-               $html .= "<h4>$title</h4>";
-               $html .= "<p>$desc</p>";
-               $html .= "</div></a>";
+               $html .= <<< MEDIA
+               <a href="index.php?page=media&id=$media_id">
+               <div class="media">
+                    <h4>$title</h4>
+                    <p>$desc</p>
+               </div></a>
+               MEDIA;
           }
      } else {
           $html .= "<div class=\"media\" style=\"border: 0px\"></div>";

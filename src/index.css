@@ -187,6 +187,11 @@ video {
     margin-right: 2px;
 }
 
+.media-header-left a.active {
+    background-color: dodgerblue;
+    color: white;
+}
+
 .media-header-left {
     float: left;
     margin-left: 10px;

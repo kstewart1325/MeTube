@@ -30,12 +30,14 @@ function getHomePage(){
                $newrow = $newresult->fetch_assoc();
                $fullname = $newrow['first_name'] . " " . $newrow['last_name'];
 
-               $html .= "<a href=\"index.php?page=media&id=$media_id\">";
-               $html .= "<div class=\"media\">";
-               $html .= "<h4>$title</h4>";
-               $html .= "<h5>$fullname</h5>";
-               $html .= "<p>$desc</p>";
-               $html .= "</div></a>";
+               $html .= <<< PAGE
+               <a href="index.php?page=media&id=$media_id">
+               <div class="media">
+                    <h4>$title</h4>
+                    <h5>$fullname</h5>
+                    <p>$desc</p>
+               </div></a>
+               PAGE;
           }
      } else {
           $html .= "<div class=\"media\" style=\"border: 0px\"></div>";

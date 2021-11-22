@@ -10,15 +10,16 @@ function getMediaPage($media_id){
     $videoTypes = array("video/mp4");
 
     if(!session_id()) session_start();
-    $user_id = $_SESSION['user_id'];
+    $current_user_id = $_SESSION['user_id'];
     $isLoggedIn = $_SESSION['isLoggedIn'];
+
+    $isSubscribed = false;
 
     $html = <<< PAGE
      <div class="media-page">
     PAGE;
 
     //display appropriate media file
-    $file = "";
     $sql = "SELECT * FROM Mediafiles WHERE `media_id`=\"$media_id\"";
     $result = $conn->query($sql);
     if($result->num_rows > 0){
@@ -39,6 +40,15 @@ function getMediaPage($media_id){
         $row = $result->fetch_assoc();
         $fullname = $row['first_name'] . " " . $row['last_name'];
 
+        // checks if user is subscibed to channel
+        if($isLoggedIn && $current_user_id != $media_user_id){
+            $sql = "SELECT * FROM Subscriptions WHERE `channel`=\"$media_user_id\" AND `subscriber`=\"$current_user_id\"";
+            $result = $conn->query($sql);
+            if($result->num_rows >0){
+                $isSubscribed = true;
+            }
+        }
+
         $html .= "<div id=\"media-container\" class=\"display\">";
 
         if(in_array($media_type, $imageTypes)){
@@ -58,51 +68,50 @@ function getMediaPage($media_id){
         $html .= "</div>";
 
         // displays owner and subscribe button
-        $html .= "<div class=\"media-header\">";
-        $html .= "<a href = \"index.php?page=channel&id=$media_user_id\"><div class=\"media-header-left\">";
-        $html .= "<img style=\"float: left; width: 40px; height: 40px\" src=\"../media/profile-icon.png\">";
-        $html .= "<h3 style=\"float: left; margin-left: 5px\">$fullname</h3>";
-
-        $html .= <<< HEAD
-            </div></a>
+        $html .= <<< HEADER
+        <div class="media-header">
+            <a href = "index.php?page=channel&id=$media_user_id">
+                <div class="media-header-left">
+                <img style="float: left; width: 40px; height: 40px" src="../media/profile-icon.png">
+                <h3 style="float: left; margin-left: 5px">$fullname</h3>
+                </div>
+            </a>
             <div class="media-header-right">
-                <a href="" >Subscribe</a>
-            </div>
-        </div>
-        HEAD;
+        HEADER;
+
+        if($isLoggedIn && $current_user_id == $media_user_id){
+            $html .= "";
+        } else if($isSubscribed){
+            $html .= "<a style=\"background-color: dodgerblue; color: white;\" href=\"subscribe.php?page=media&id=$media_user_id&media=$media_id\" >Subscribed</a>";
+        } else {
+            $html .= "<a href=\"subscribe.php?page=media&id=$media_user_id&media=$media_id\" >Subscribe</a>";
+        }
 
         //displays metadata of media file
         $html .= <<< DATA
+            </div>
+        </div>
         <div class="meta-data">
             <hr style="margin-bottom: 10px;" class="solid">
             <div style="float: left; margin-left: 10px;" class="data-left">
-        DATA;
-
-        $html .= "<h3>$media_title</h3>";
-        $html .= $desc;
-        $html .= "<br>";
-        $html .= "<p>$view_count views  |  Date uploaded: $date_uploaded</p>";
-        $html .= "<p>Category: $category</p>";
-        $html .= "<p>Keywords: $keywords</p><br>";
-
-        $html .= <<< DATA
+                <h3>$media_title</h3>
+                $desc<br>
+                <p>$view_count views  |  Date uploaded: $date_uploaded</p>
+                <p>Category: $category</p>
+                <p>Keywords: $keywords</p><br>
             </div>
             <div style="float: right" class="data-right">
-        DATA;
-
-        $html .= "<a href=\"$media_path\" download>Download</a>";
-
-        $html .= <<< DATA
+                <a href=\"$media_path\" download>Download</a>"
                 <a href="" >Add to Playlist</a>
             </div>
         </div>
         DATA;        
 
         //diplays comments in hierarchial order
-        $html .= <<< PAGE
+        $html .= <<< COMMENTS
         <div class="comments">
         </div>
-        PAGE;
+        COMMENTS;
     }
 
     $html .= <<< PAGE
