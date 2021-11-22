@@ -55,7 +55,7 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
 
           //stores file info into database
           $sql = "INSERT INTO Mediafiles VALUES 
-          ('$media_id', '$user_id', \"$title\", '$fileType', '$fileSize', '$category', CURRENT_TIMESTAMP, '0', \"$desc\", '$target_file')";
+          ('$media_id', '$user_id', \"$title\", '$fileType', '$fileSize', '$category', CURRENT_TIMESTAMP, '0', \"$desc\", '$target_file', '$keywords')";
           $result = $conn->query($sql);
 
           if ($result === TRUE) {

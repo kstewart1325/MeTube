@@ -23,6 +23,7 @@ if(!isset($_SESSION['isLoggedIn'])){
 $isLoggedIn = $_SESSION['isLoggedIn'];
 $currentPage = "home";
 $id = "";
+$keyword = "";
 
 if($_SERVER['REQUEST_METHOD']=="GET"){
     if(isset($_GET['page'])){
@@ -32,6 +33,16 @@ if($_SERVER['REQUEST_METHOD']=="GET"){
     if(isset($_GET['id'])){
         $id = $_GET['id'];
     }
+
+    if(isset($_GET['content'])){
+        $keyword = $_GET['content'];
+        $currentPage = "search";
+    }
+}
+
+if($_SERVER['REQUEST_METHOD']=="POST"){
+    $keyword = $_POST['content'];
+    $currentPage = "search";
 }
 
 $html = <<< PAGE
@@ -47,8 +58,8 @@ $html = <<< PAGE
             <a href="" class="logo">MeTube</a>
         </div>
         <div class="header-middle">
-        <form class="form-inline" method="GET" action="search.php">
-             <input type="text" class="form-control" placeholder="Search here..." name="content" required="required"/>
+        <form class="form-inline" method="GET" action="index.php">
+             <input type="text" class="form-control" placeholder="Search by keyword..." name="content" required="required"/>
         </form>
         </div>
         <div class="header-right">
@@ -85,16 +96,16 @@ if($currentPage === "home"){
     unset($_SESSION['id']);
     header('Location: '. $url . $path . 'index.php');
 }else if($currentPage === "search"){
-    $html .= $search_html;
+    $html .= search($keyword);
 }else if($currentPage === "playlists"){
-    $html .= "<i>$currentMsg</i><br>";
-    $html .= $play_html;
+    // $html .= "<i>$currentMsg</i><br>";
+    // $html .= $play_html;
 }else if($currentPage === "contacts"){
-    $html .= "<i>$currentMsg</i><br>";
-    $html .= $contacts_html;
+    // $html .= "<i>$currentMsg</i><br>";
+    // $html .= $contacts_html;
 }else if($currentPage === "favorites"){
-    $html .= "<i>$currentMsg</i><br>";
-    $html .= $fav_html;
+    // $html .= "<i>$currentMsg</i><br>";
+    // $html .= $fav_html;
 }
 
 
