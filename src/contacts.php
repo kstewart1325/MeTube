@@ -10,21 +10,18 @@
   $path = "MeTube/src/";
   $url = "http://localhost:8070/";
 
-  include_once 'db_connection.php';
-
+  include 'db_connection.php';
   $conn = OpenCon();
 
   $session_user = $_SESSION['user_id'];
-  //$session_user = 2;
-
+  
   $resubmit = false;
   $error_message = "";
-
-  $contacts_html = "";
   
   if($_SERVER['REQUEST_METHOD']=="POST"){
       //stores data from form
       $username = $_POST['username'];
+      //$func = $_POST['func'];
 
       //checks if values are empty, ask them to resubmit if not
       if(empty($username)){
@@ -61,10 +58,9 @@
 
               if ($result === TRUE) {
                   // header('Location: '. $url . $path . 'contacts.php');
-                  $error_message = "<br><i>$username</i> removed from Contact List<br>";
-                  header('Location: '. $url . $path . 'index.php?page=contacts&msg=' . $error_message);
+                  $error_message = "<br><i>$username</i>e removed from Contact List<br>";
               } else {
-                  $contacts_html .= "Error: $sql <br> $conn->error";
+                  echo("Error: " . $sql . "<br>" . $conn->error);
               }
 
           }else{
@@ -97,22 +93,30 @@
               $result3 = $conn->query($sql);
       
               if ($result3 === TRUE) {
+                  //header('Location: '. $url . $path . 'contacts.php');
                   $error_message = "<br><i>$username</i> added to Contact List<br>";
-                  header('Location: '. $url . $path . 'index.php?page=contacts&msg=' . $error_message);
               } else {
-                 $contacts_html .= "Error: $sql <br> $conn->error";
+                  echo("Error: " . $sql . "<br>" . $conn->error);
               }            
           }      
       }
   }
 
-  if($resubmit === true){
-    header('Location: '. $url . $path . 'index.php?page=contacts&msg=' . $error_message);
-  }
-
-  $contacts_html = <<< PAGE
+  $html = <<< PAGE
+  <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Contacts</title>
+      <style>
+        table, th, td {
+          border: 1px solid black;
+          border-collapse: collapse;
+        }
+      </style>
+    </head>
+    <body>
       <span id="contact_form">
-        <form action="contacts.php" method="post" name="contact_form" id="contact_form">
+        <form method="post" name="contact_form" id="contact_form">
           <fieldset>
             <legend>Add or Remove Contact</legend>
             <p>
@@ -122,24 +126,32 @@
             <p>
   PAGE;
             
-  $contacts_html .= "<input type=\"submit\" name=\"addContact\" value=\"Add\" /> ";
-  $contacts_html .= "<input type=\"submit\" name=\"removeContact\" value=\"Remove\" /> ";
+  //$html .= "<input id=\"add\" name=\"add\" type=\"submit\" value=\"Add\" href=\"contacts.php?func=add\" /> ";
+  //$html .= "<input id=\"remove\" name=\"remove\" type=\"submit\" value=\"Remove\" href=\"contacts.php?func=remove&username\" />";
 
-  $contacts_html .= <<< PAGE
+  $html .= "<input type=\"submit\" name=\"addContact\" value=\"Add\" /> ";
+  $html .= "<input type=\"submit\" name=\"removeContact\" value=\"Remove\" /> ";
+
+  $html .= <<< PAGE
             </p>
           </fieldset>
         </form>
       </span>
   PAGE;
 
+  //displays contact page with appropriate error message
+  $html .= $error_message;
+
+  
+
   // queries existing contacts for the current user
   $sql = "SELECT contact_id FROM Contacts WHERE user_id=\"$session_user\"";
   $result = $conn->query($sql);
-  $contacts_html .= "<h3><u>Contacts</u></h3>";
+  $html .= "<h3><u>Contacts</u></h3>";
   
   // print out into a table v
   if ($result->num_rows > 0) {
-       $contacts_html .= "<table style=\"width:100%\"><tr><th>Username</th><th>Name</th></tr>";
+       $html .= "<table style=\"width:100%\"><tr><th>Username</th><th>Name</th></tr>";
     
       // output data of each row
       while($row = $result->fetch_assoc()) {
@@ -149,12 +161,19 @@
           $result2 = $conn->query($sql);
           $row2 = $result2->fetch_assoc();
 
-          $contacts_html .= "<tr><td>".$row2["username"]."</td> <td>".$row2["first_name"]." ".$row2["last_name"]."</td></tr>";
+          $html .= "<tr><td>".$row2["username"]."</td> <td>".$row2["first_name"]." ".$row2["last_name"]."</td></tr>";
       }
-      $contacts_html .= "</table>";       
+      $html .= "</table>";       
   } else {
-    $contacts_html .= "You have no Contacts.";
+    $html .= "You have no Contacts.";
   }
+
+  $html .= <<< PAGE
+    </body>
+  </html>
+  PAGE;
+
+  echo $html;
 
   CloseCon($conn);
 ?>
