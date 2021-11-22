@@ -18,10 +18,16 @@ function getMediaPage($media_id, $msg){
 
     $isSubscribed = false;
     $error_message = "";
+    $comment_message = "";
 
     if($msg === "sub"){
         $error_message = "You must be logged in to subscribe.";
+    } else if($msg === "nocom"){
+        $comment_message = "Field left blank.";
+    } else if($msg === "comerr"){
+        $comment_message = "Error adding comment.";
     }
+
 
     $html = <<< PAGE
      <div class="media-page">
@@ -128,6 +134,7 @@ function getMediaPage($media_id, $msg){
         <form style="width: 72.5%; margin-left: 15%;" action="comments.php" method="post">
             <fieldset>
                 <legend>Comments</legend>
+                <p>$comment_message</p>
                 <p>
                     <label for="comment">Add a comment:</label><br>
                     <TEXTAREA name="comment" rows="4" cols="80"></TEXTAREA>
@@ -151,8 +158,10 @@ function getMediaPage($media_id, $msg){
                 $html .= <<< COMMENT
                 <div class="comment">
                     <div class="comment-header">
-                        <img style="float: left; width: 25px; height: 25px" src="../media/profile-icon.png" />
-                        <p style="margin-bottom: 5px;"><b>$fullname</b></p>
+                        <img src="../media/profile-icon.png" style="float: left; width: 25px; height: 25px;  margin-top: 6px;"></img>
+                        <div style="float: left;">
+                        <p style="padding-bottom: 5px;"><b>$fullname</b></p>
+                        </div>
                     </div>
                     <div class="comment-data">
                         <p>$content</p>
@@ -163,7 +172,6 @@ function getMediaPage($media_id, $msg){
         }
 
         $html .= <<< COMMENTS
-              </div>
             </fieldset>
         </form>
         </div>

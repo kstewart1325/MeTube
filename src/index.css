@@ -221,10 +221,11 @@ video {
 
 /* Comments */
 
-.comment {
+/*.comment {
     border: 1px solid black;
     border-radius: 4px;
-}
+}*/
+
 .comment-header {
     float: left;
     width: 80%;
@@ -233,5 +234,5 @@ video {
 
 .comment-data {
     float: left;
-    margin-left: 25px;
+    margin-left: 30px;
 }
