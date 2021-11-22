@@ -101,8 +101,8 @@ function getMediaPage($media_id){
                 <p>Keywords: $keywords</p><br>
             </div>
             <div style="float: right" class="data-right">
-                <a href=\"$media_path\" download>Download</a>"
-                <a href="" >Add to Playlist</a>
+                <a href="$media_path" download>Download</a>"
+                <a href="">Add to Playlist</a>
             </div>
         </div>
         DATA;        
