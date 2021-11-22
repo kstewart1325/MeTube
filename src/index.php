@@ -5,10 +5,6 @@ include 'home.php';
 include 'channel.php';
 include 'media.php';
 include 'search.php';
-include 'playlists.php';
-include 'contacts.php';
-include 'favorites.php';
-
 
 $path = "MeTube/src/";
 $url = "http://localhost:8070/";
@@ -89,15 +85,6 @@ if($currentPage === "home"){
     header('Location: '. $url . $path . 'index.php');
 }else if($currentPage === "search"){
     $html .= $search_html;
-}else if($currentPage === "playlists"){
-    $html .= "<i>$currentMsg</i><br>";
-    $html .= $play_html;
-}else if($currentPage === "contacts"){
-    $html .= "<i>$currentMsg</i><br>";
-    $html .= $contacts_html;
-}else if($currentPage === "favorites"){
-    $html .= "<i>$currentMsg</i><br>";
-    $html .= $fav_html;
 }
 
 $html .= <<< PAGE
