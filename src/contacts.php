@@ -55,7 +55,7 @@
             
             // print out into a table v
             if ($result->num_rows > 0) {
-                $html .= "<table style=\"width:100%\"><tr><th>Username</th><th>Name</th></tr>";
+                $html .= "<table style=\"width:100%\"><tr><th>Username</th><th>Name</th><th>Message</th></tr>";
                 
                 // output data of each row
                 while($row = $result->fetch_assoc()) {
@@ -64,8 +64,9 @@
                     $sql = "SELECT `username`, `first_name`, `last_name` FROM Account WHERE user_id=\"$c_id\"";
                     $result2 = $conn->query($sql);
                     $row2 = $result2->fetch_assoc();
+                    $user = $row2['username'];
 
-                    $html .= "<tr><td>".$row2["username"]."</td> <td>".$row2["first_name"]." ".$row2["last_name"]."</td></tr>";
+                    $html .= "<tr><td>".$row2["username"]."</td> <td>".$row2["first_name"]." ".$row2["last_name"]."</td><td><a href=\"/MeTube/src/index.php?page=mailbox&reply=$user\">Send Message</a></td></tr>";
                 }
                 $html .= "</table>";       
             } else {

@@ -22,24 +22,6 @@ function getMailbox($msg){
           include_once 'db_connection.php';
           $conn = OpenCon();
 
-          $resubmit = false;
-          $error_message = "";
-
-          // $html = <<< PAGE
-          // <!DOCTYPE html>
-          //   <html>
-          //   <head>
-          //     <title>Messages</title>
-          //     <style>
-          //       table, th, td {
-          //         border: 1px solid black;
-          //         border-collapse: collapse;
-          //       }
-          //     </style>
-          //   </head>
-          //   <body>
-          // PAGE;
-
           if(isset($_GET['box'])){
             $box = $_GET['box'];
 
@@ -94,6 +76,7 @@ function getMailbox($msg){
                 $html .= <<< PAGE
                 <form method="post" name="new_message" id="new_message" action="mailbox_update.php">
                     <fieldset>
+                    <p>$msg</p>
                     <p>
                         <label for="username">To: </label>
                         <input type="text" id="username" name="username" />
