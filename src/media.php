@@ -26,6 +26,8 @@ function getMediaPage($media_id, $msg){
         $comment_message = "Field left blank.";
     } else if($msg === "comerr"){
         $comment_message = "Error adding comment.";
+    }else if($msg === "comlog"){
+        $comment_message = "You must be logged in to comment.";
     }
 
 
