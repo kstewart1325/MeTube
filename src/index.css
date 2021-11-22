@@ -174,7 +174,7 @@ video {
 }
 
 .media-header-right a {
-    float: left;
+    float: right;
     color: black;
     text-align: center;
     padding: 10px;

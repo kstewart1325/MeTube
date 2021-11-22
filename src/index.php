@@ -93,7 +93,7 @@ PAGE;
 if($currentPage === "home"){
     $html .= getHomePage();
 } else if($currentPage === "channel"){
-    $html .= getChannelPage($id);
+    $html .= getChannelPage($id, $msg);
 } else if($currentPage === "media"){
     $html .= getMediaPage($id, $msg);
 } else if($currentPage === "logout") {

@@ -99,7 +99,6 @@ $html = <<< PAGE
         <input type="text" id="title" name="title" /><br />
       </p>
       <p>
-        <!-- THESE EVENTUALLY NEED TO BE STORED IN A DB TABLE AND QUERIED TO POPULATE -->
         <label for="category">Category: </label>
         <select name="category">
         <option value="blank">     </option>
@@ -132,7 +131,7 @@ $html .= <<< PAGE
     </fieldset>
 PAGE;
 
-//displays signup page with appropriate error message
+//displays upload page with appropriate error message
 if($resubmit === true){
   $html .= $error_message;
 }

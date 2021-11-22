@@ -83,23 +83,25 @@ function getMediaPage($media_id, $msg){
                 <h3 style="float: left; margin-left: 5px">$fullname</h3>
                 </div>
             </a>
-            <div style="width: 60%;" class="media-header-right">
-                <div style="float: left;" class="info">
-                    <p>$error_message</p>
-                <div>
+            <div style="width: 70%; float: right;" class="media-header-right">
+                <a style="float: right; border: 0px;" href="login.php">$error_message</a>
         HEADER;
 
         if($isLoggedIn && $current_user_id == $media_user_id){
             $html .= "";
-        } else if($isSubscribed){
-            $html .= "<a style=\"background-color: dodgerblue; color: white;\" href=\"subscribe.php?page=media&id=$media_user_id&media=$media_id\" >Subscribed</a>";
         } else if(!$isLoggedIn){
-            $html .= "<a href=\"index.php?page=media&id=$media_id&msg=sub\">Subscribe</a>";
+            $html .= "<a style=\"float: right;\" href=\"index.php?page=media&id=$media_id&msg=sub\">Subscribe</a>";
+        } else if($isSubscribed){
+            $html .= "<a style=\"float: right; background-color: dodgerblue; color: white;\" href=\"subscribe.php?page=media&id=$media_user_id&media=$media_id\" >Subscribed</a>";
+        } else {
+            $html .= "<a style=\"float: right;\" href=\"subscribe.php?page=media&id=$media_user_id&media=$media_id\" >Subscribe</a>";
         }
 
         //displays metadata of media file
         $html .= <<< DATA
             </div>
+        </div>
+        </div>
         </div>
         <div class="meta-data">
             <hr style="margin-bottom: 10px;" class="solid">
@@ -111,7 +113,7 @@ function getMediaPage($media_id, $msg){
                 <p>Keywords: $keywords</p><br>
             </div>
             <div style="float: right" class="data-right">
-                <a href="$media_path" download>Download</a>"
+                <a href="$media_path" download>Download</a>
                 <a href="">Add to Playlist</a>
             </div>
         </div>
