@@ -131,7 +131,7 @@ PAGE;
   }
   $html .= "<a href=\"/inbox.php\">Return to mailbox</a> ";
 }
-else{
+else{ 
   $html = <<< PAGE
   <span id="Message pick">
   <h3><a href="/inbox.php?box=in">Inbox</a>   
