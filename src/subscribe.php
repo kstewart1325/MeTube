@@ -1,5 +1,5 @@
 <?php
-include 'db_connection.php';
+include_once 'db_connection.php';
 
 $path = "MeTube/src/";
 $url = "http://localhost:8070/";

@@ -10,7 +10,7 @@
 $path = "MeTube/src/";
 $url = "http://localhost:8070/";
 
-include 'db_connection.php';
+include_once 'db_connection.php';
 $conn = OpenCon();
 
 $resubmit = false;

@@ -2,27 +2,27 @@
   $path = "MeTube/src/index.php";
   $url = "http://localhost:8070/";
 
-  include 'db_connection.php';
+  include_once 'db_connection.php';
   $conn = OpenCon();
   
   $error_message = "";
 
   $search_html = "";
 
-  $search_html = <<< PAGE
-      <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Playlists</title>
-          <style>
-            table, th, td {
-              border: 1px solid black;
-              border-collapse: collapse;
-            }
-          </style>
-        </head>
-        <body>
-    PAGE;
+//   $search_html = <<< PAGE
+//       <!DOCTYPE html>
+//         <html>
+//         <head>
+//           <title>Playlists</title>
+//           <style>
+//             table, th, td {
+//               border: 1px solid black;
+//               border-collapse: collapse;
+//             }
+//           </style>
+//         </head>
+//         <body>
+//     PAGE;
   
   if($_SERVER['REQUEST_METHOD']=="GET"){
 
@@ -64,12 +64,12 @@
 
  
 
-  $search_html .= <<< PAGE
-    </body>
-    </html>
-  PAGE;
+//   $search_html .= <<< PAGE
+//     </body>
+//     </html>
+//   PAGE;
 
-  echo $search_html;
+//   echo $search_html;
   
   CloseCon($conn);
 
