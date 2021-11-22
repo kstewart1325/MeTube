@@ -22,11 +22,14 @@ function getChannelPage($user_id){
      }
 
      // displays owner and subscribe button if other user's channel
-     $sql = "SELECT `first_name`, `last_name`, `num_subs` FROM Account WHERE `user_id`=\"$user_id\"";
+     $sql = "SELECT * FROM Account WHERE `user_id`=\"$user_id\"";
      $result = $conn->query($sql);
      $row = $result->fetch_assoc();
      $fullname = $row["first_name"] . " " . $row['last_name'];
      $num_subs = $row["num_subs"];
+     $username = $row["username"];
+     $email = $row["email"];
+     $birthday = $row["birthday"];
 
      $html .= <<< HEAD
      <div style="width: 90%; margin-left: 5%;" class="media-header">
@@ -34,11 +37,24 @@ function getChannelPage($user_id){
                <img style="float: left; width: 40px; height: 40px" src="../media/profile-icon.png">
                <h3 style="float: left; margin-left: 5px">$fullname</h3>
           </div>
-          <div class="media-header-right">
+          <div style="float: right; width: 70%;" class="media-header-right">
      HEAD;
 
      if($isLoggedIn && $current_user_id == $user_id){
-          $html .= "<p>Subscribers: $num_subs";
+          $html .= <<< HEAD
+               <div class="info">
+                    <p>Subscribers: $num_subs</p>
+               </div>
+               <div class="info">
+                    <p>Birthday: $birthday</p>
+               </div>
+               <div class="info">
+                    <p>Email: $email</p>
+               </div>
+               <div class="info">
+                    <p>Username: $username</p>
+               </div>
+          HEAD;
      } else if($isSubscribed){
           $html .= "<a style=\"background-color: dodgerblue; color: white;\" href=\"subscribe.php?page=channel&id=$user_id\" >Subscribed</a>";
      } else {

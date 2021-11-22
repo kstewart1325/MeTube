@@ -24,6 +24,7 @@ $isLoggedIn = $_SESSION['isLoggedIn'];
 $currentPage = "home";
 $id = "";
 $keyword = "";
+$msg = "";
 
 if($_SERVER['REQUEST_METHOD']=="GET"){
     if(isset($_GET['page'])){
@@ -37,6 +38,10 @@ if($_SERVER['REQUEST_METHOD']=="GET"){
     if(isset($_GET['content'])){
         $keyword = $_GET['content'];
         $currentPage = "search";
+    }
+
+    if(isset($_GET['msg'])){
+        $msg = $_GET['msg'];
     }
 }
 
@@ -90,7 +95,7 @@ if($currentPage === "home"){
 } else if($currentPage === "channel"){
     $html .= getChannelPage($id);
 } else if($currentPage === "media"){
-    $html .= getMediaPage($id);
+    $html .= getMediaPage($id, $msg);
 } else if($currentPage === "logout") {
     unset($_SESSION['isLoggedIn']);
     unset($_SESSION['id']);

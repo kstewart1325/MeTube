@@ -1,6 +1,6 @@
 <?php 
 
-function getMediaPage($media_id){
+function getMediaPage($media_id, $msg){
     include_once 'db_connection.php';
 
     $conn = openCon();
@@ -14,6 +14,11 @@ function getMediaPage($media_id){
     $isLoggedIn = $_SESSION['isLoggedIn'];
 
     $isSubscribed = false;
+    $error_message = "";
+
+    if($msg === "sub"){
+        $error_message = "You must be logged in to subscribe.";
+    }
 
     $html = <<< PAGE
      <div class="media-page">
@@ -33,7 +38,7 @@ function getMediaPage($media_id){
         $view_count = $row['view_count'];
         $category = $row['category'];
         $media_path = $row['media_path'];
-        $keywords = "";
+        $keywords = $row['keywords'];
 
         $sql = "SELECT * FROM Account WHERE `user_id`=\"$media_user_id\"";
         $result = $conn->query($sql);
@@ -65,8 +70,10 @@ function getMediaPage($media_id){
             $html .= "<p>Unable to display media.</p>";
         }
     
-        $html .= "</div>";
-
+        $html .= <<< PAGE
+        </div>
+        PAGE;
+         
         // displays owner and subscribe button
         $html .= <<< HEADER
         <div class="media-header">
@@ -76,15 +83,18 @@ function getMediaPage($media_id){
                 <h3 style="float: left; margin-left: 5px">$fullname</h3>
                 </div>
             </a>
-            <div class="media-header-right">
+            <div style="width: 60%;" class="media-header-right">
+                <div style="float: left;" class="info">
+                    <p>$error_message</p>
+                <div>
         HEADER;
 
         if($isLoggedIn && $current_user_id == $media_user_id){
             $html .= "";
         } else if($isSubscribed){
             $html .= "<a style=\"background-color: dodgerblue; color: white;\" href=\"subscribe.php?page=media&id=$media_user_id&media=$media_id\" >Subscribed</a>";
-        } else {
-            $html .= "<a href=\"subscribe.php?page=media&id=$media_user_id&media=$media_id\" >Subscribe</a>";
+        } else if(!$isLoggedIn){
+            $html .= "<a href=\"index.php?page=media&id=$media_id&msg=sub\">Subscribe</a>";
         }
 
         //displays metadata of media file

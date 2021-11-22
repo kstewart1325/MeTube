@@ -205,3 +205,16 @@ video {
     background-color: #ddd;
     color: black;
 }
+
+.info p {
+    float: right;
+    color: black;
+    padding: 10px;
+    text-decoration: none;
+    font-size: 15px;
+    line-height: 25px;
+    border: 1px solid black;
+    border-radius: 4px;
+    margin-left: 2px;
+    margin-right: 2px;
+}

@@ -6,10 +6,11 @@
   $conn = OpenCon();
 
   $play_html = "";
+    
+  if(!session_id()) session_start();    
+  $isLoggedIn = $_SESSION['isLoggedIn'];
 
-  if(!session_id()) session_start();
-
-  if(!isset($_SESSION['isLoggedIn'])){
+  if(!$isLoggedIn){
     $play_html .= "You are not logged in. Please log-in to view this page.";
   }else{
 
