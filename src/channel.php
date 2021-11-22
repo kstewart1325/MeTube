@@ -1,7 +1,7 @@
 <?php 
 
 function getChannelPage(){
-     include 'db_connection.php';
+     include_once 'db_connection.php';
 
      $conn = openCon();
 
@@ -16,6 +16,7 @@ function getChannelPage(){
 
      $html = "<div class=\"welcome\" style=\"padding-left: 20px\">";
      $html .= "<h2>Hello $name!</h2>";
+     $html.= "<br><a href=\"/MeTube/src/index.php?page=favorites\">Favorites</a> <a href=\"/MeTube/src/index.php?page=playlists\">Playlists</a> <a href=\"/MeTube/src/index.php?page=contacts\">Contacts</a>";
      $html .= "</div>";
 
      $html .= <<< PAGE
