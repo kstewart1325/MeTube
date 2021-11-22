@@ -1,8 +1,3 @@
-<!-- 
-    Playlists page 
-    Allow users to organize mediafiles into playlists.
--->
-
 <?php
   $path = "MeTube/src/";
   $url = "http://localhost:8070/";

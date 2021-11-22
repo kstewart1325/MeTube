@@ -1,7 +1,3 @@
-<!-- 
-    Favorites page 
-    Allow users to save favorites for easy access later.
--->
 
 <?php
   $path = "MeTube/src/index.php";

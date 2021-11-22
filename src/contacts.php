@@ -2,6 +2,7 @@
     Contacts page 
     Allow users to organize their contacts into a contact list, 
     to (1) add a user, and to (2) remove a user from their contact lists. 
+    BONUS: Allow users to organize their contacts into different categories.
 -->
 
 <?php
