@@ -13,12 +13,21 @@ function getMediaPage($media_id, $msg){
     $current_user_id = $_SESSION['user_id'];
     $isLoggedIn = $_SESSION['isLoggedIn'];
 
+    //used for comments only
+    $_SESSION['media_id'] = $media_id;
+
     $isSubscribed = false;
     $error_message = "";
+    $comment_message = "";
 
     if($msg === "sub"){
         $error_message = "You must be logged in to subscribe.";
+    } else if($msg === "nocom"){
+        $comment_message = "Field left blank.";
+    } else if($msg === "comerr"){
+        $comment_message = "Error adding comment.";
     }
+
 
     $html = <<< PAGE
      <div class="media-page">
@@ -122,6 +131,49 @@ function getMediaPage($media_id, $msg){
         //diplays comments in hierarchial order
         $html .= <<< COMMENTS
         <div class="comments">
+        <form style="width: 72.5%; margin-left: 15%;" action="comments.php" method="post">
+            <fieldset>
+                <legend>Comments</legend>
+                <p>$comment_message</p>
+                <p>
+                    <label for="comment">Add a comment:</label><br>
+                    <TEXTAREA name="comment" rows="4" cols="80"></TEXTAREA>
+                </p>
+                <p><input type="submit" name="upload" value="Comment" /> <input type="reset" value="Clear"/></p>
+        COMMENTS;
+
+        $sql = "SELECT * FROM Comment WHERE `media_id`=\"$media_id\" ORDER BY cluster_id DESC";
+        $result = $conn->query($sql);
+        if($result->num_rows > 0){
+            while($row = $result->fetch_assoc()){
+                $parent_id = $row['parent_id'];
+                $content = $row['content'];
+                $comment_user_id = $row['user_id'];
+
+                $nextsql = "SELECT `first_name`, `last_name` FROM Account WHERE `user_id`=\"$comment_user_id\"";
+                $nextresult = $conn->query($nextsql);
+                $nextrow = $nextresult->fetch_assoc();
+                $fullname = $nextrow['first_name'] . " " . $nextrow['last_name'];
+
+                $html .= <<< COMMENT
+                <div class="comment">
+                    <div class="comment-header">
+                        <img src="../media/profile-icon.png" style="float: left; width: 25px; height: 25px;  margin-top: 6px;"></img>
+                        <div style="float: left;">
+                        <p style="padding-bottom: 5px;"><b>$fullname</b></p>
+                        </div>
+                    </div>
+                    <div class="comment-data">
+                        <p>$content</p>
+                    </div>
+                </div>
+                COMMENT;
+            }
+        }
+
+        $html .= <<< COMMENTS
+            </fieldset>
+        </form>
         </div>
         COMMENTS;
     }
