@@ -7,8 +7,6 @@ function getMailbox($msg){
 
       $current_user_id = $_SESSION['user_id'];
       $isLoggedIn = $_SESSION['isLoggedIn'];
-      //test variable below
-      //$current_user_id = 2;
 
       $html = "";
 
@@ -17,7 +15,7 @@ function getMailbox($msg){
       }else{
 
           $path = "MeTube/src/";
-          $url = "http://localhost:8070/";
+          $url = "http://webapp.computing.clemson.edu/~cgstewa/";
 
           include_once 'db_connection.php';
           $conn = OpenCon();
@@ -130,7 +128,7 @@ function getMailbox($msg){
                   
                   $html .= "</table><br>";
                   if($receiver !== 0){
-                      $html .= "<a href=\"/MeTube/src/index.php?page=mailbox&reply=$receiver\">Reply</a>";
+                      $html .= "<a href=\"$path/index.php?page=mailbox&reply=$receiver\">Reply</a>";
                   }
               }else {
                 $html .= "You have no messages.";
@@ -197,7 +195,7 @@ function getMailbox($msg){
                     $time = $row['Timestamp'];
                     $id = $row['Conversation_ID'];
 
-                    $html .= "<tr><td><a href=\"/MeTube/src/index.php?page=mailbox&reply=$sender\">Reply</a></td><td>$sender</td><td><a href=\"index.php?page=mailbox&convo=$id\">$message</a></td><td>$time</td></tr>";
+                    $html .= "<tr><td><a href=\"index.php?page=mailbox&reply=$sender\">Reply</a></td><td>$sender</td><td><a href=\"index.php?page=mailbox&convo=$id\">$message</a></td><td>$time</td></tr>";
                   }
 
                   $html .= "</table>";
@@ -205,11 +203,6 @@ function getMailbox($msg){
                   $html .= "You have no messages.";
               }
           } 
-
-          // $html .= <<< PAGE
-          // </body>
-          // </html>
-          // PAGE;
 
           CloseCon($conn);
       }

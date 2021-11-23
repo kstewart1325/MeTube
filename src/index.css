@@ -316,3 +316,12 @@ video {
   .dropdown:hover .dropbtn {
     background-color: #ddd;
    }
+
+   table {
+    float: left;
+    width: 50%;
+   }
+
+   th {
+    width: 25%;
+   }

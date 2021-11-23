@@ -2,7 +2,7 @@
 
 function getBrowse($cat){
     $path = "MeTube/src/";
-    $url = "http://localhost:8070/";
+    $url = "http://webapp.computing.clemson.edu/~cgstewa/";
   
     include_once 'db_connection.php';
     $conn = OpenCon();
@@ -60,7 +60,7 @@ function getBrowse($cat){
                  MEDIA;
             }
         } else {
-            $html .= "<div class=\"media\" style=\"border: 0px; height: 50px;\"><h4>This playlist is empty.</h4></div>";
+            $html .= "<div class=\"media\" style=\"border: 0px; height: 50px;\"><h4>This category is empty.</h4></div>";
         }
 
        $html .= "</div>";

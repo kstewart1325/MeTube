@@ -10,7 +10,7 @@
   function getContactsPage($msg){
 
         $path = "MeTube/src/";
-        $url = "http://localhost:8070/";
+        $url = "http://webapp.computing.clemson.edu/~cgstewa/";
 
         include_once 'db_connection.php';
         $conn = OpenCon();
@@ -66,7 +66,7 @@
                     $row2 = $result2->fetch_assoc();
                     $user = $row2['username'];
 
-                    $html .= "<tr><td>".$row2["username"]."</td> <td>".$row2["first_name"]." ".$row2["last_name"]."</td><td><a href=\"/MeTube/src/index.php?page=mailbox&reply=$user\">Send Message</a></td></tr>";
+                    $html .= "<tr><td>".$row2["username"]."</td> <td>".$row2["first_name"]." ".$row2["last_name"]."</td><td><a href=\"index.php?page=mailbox&reply=$user\">Send Message</a></td></tr>";
                 }
                 $html .= "</table>";       
             } else {

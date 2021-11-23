@@ -1,7 +1,7 @@
 <?php
 
 $path = "MeTube/src/";
-$url = "http://localhost:8070/";
+$url = "http://webapp.computing.clemson.edu/~cgstewa/";
 
 if(!session_id()) session_start();
 
@@ -40,7 +40,9 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
       $fileSize = $_FILES['mediafile']['size'];
 
       //checks if media type is valid
-      if(in_array($fileExtension, $allowedExtensions) && in_array($fileType, $allowedTypes)){
+
+      // && in_array($fileType, $allowedTypes)
+      // if(in_array($fileExtension, $allowedExtensions)){
         //checks if file already exists
         if(!file_exists($target_file)) {
           //calculates appropriate media_id
@@ -74,10 +76,10 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
           $error_message = "<br><br>Media already uploaded. Please choose another.<br>";
           $resubmit = true;
         }
-      } else {
-        $error_message = "<br><br>Invalid media type. Please choose another.<br>";
-        $resubmit = true;
-      }
+      // } else {
+      //   $error_message = "<br><br>Invalid media type. Please choose another.<br>";
+      //   $resubmit = true;
+      // }
     }
   } else {
     $error_message = "<br><br>Error uploading file.<br>";
@@ -99,7 +101,7 @@ $html = <<< PAGE
           <input type="hidden" name="MAX_FILE_SIZE" value="4000000000" />
       <p>
         <label for="mediafile">File: </label>
-        <input type="file" id="mediafile" name="mediafile" /><br />
+        <input type="file" accepts=".jpeg, .gif, .png, .jpg, .mp3, .mp4, .wma" id="mediafile" name="mediafile" /><br />
       </p>
       <p>
         <label for="title">Title: </label>

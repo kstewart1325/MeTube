@@ -2,7 +2,7 @@
 include_once 'db_connection.php';
 
 $path = "MeTube/src/";
-$url = "http://localhost:8070/";
+$url = "http://webapp.computing.clemson.edu/~cgstewa/";
 
 if(!session_id()) session_start();
 
@@ -154,9 +154,9 @@ if($_SERVER['REQUEST_METHOD']=="GET"){
         // Adds media to playlist
 
         //checks if media is already in playlist
-        $sql = "SELECT `media_id` FROM Playlist_Data
+        $sql = "SELECT `entry_num` FROM Playlist_Data
         INNER JOIN Playlists ON Playlist_Data.list_id = Playlists.list_id
-        WHERE Playlists.p_name='$list'";
+        WHERE Playlists.p_name='$list' AND Playlist_Data.media_id='$id'";
         $result = $conn->query($sql);
        
         if($result->num_rows > 0){

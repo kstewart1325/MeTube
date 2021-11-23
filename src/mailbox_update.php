@@ -7,7 +7,7 @@
     $isLoggedIn = $_SESSION['isLoggedIn'];
 
     $path = "MeTube/src/index.php";
-    $url = "http://localhost:8070/";
+    $url = "http://webapp.computing.clemson.edu/~cgstewa/";
 
     include_once 'db_connection.php';
     $conn = OpenCon();

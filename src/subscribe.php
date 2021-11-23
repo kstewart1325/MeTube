@@ -2,7 +2,7 @@
 include_once 'db_connection.php';
 
 $path = "MeTube/src/";
-$url = "http://localhost:8070/";
+$url = "http://webapp.computing.clemson.edu/~cgstewa/";
 
 if(!session_id()) session_start();
 

@@ -5,8 +5,8 @@ function getMediaPage($media_id, $msg){
 
     $conn = openCon();
 
-    $imageTypes = array("image/jpeg", "image/pjpeg", "image/png");
-    $audioTypes = array("audio/mp3", "audio/wma");
+    $imageTypes = array("image/jpeg", "image/pjpeg", "image/png", "image/gif");
+    $audioTypes = array("audio/mp3", "audio/wma", "audio/mpeg");
     $videoTypes = array("video/mp4");
 
     if(!session_id()) session_start();
@@ -128,19 +128,28 @@ function getMediaPage($media_id, $msg){
                 <div class="dropdown">
                     <button class="dropbtn">Add to Playlist</button>
                     <div class="dropdown-content">
-                        <a href="favorites_update.php?action=addMedia&id=$media_id">Favorites</a>
         DATA;        
 
-        $sql = "SELECT * FROM Playlists WHERE `user_id`='$current_user_id'";
-        $result = $conn->query($sql);
-        if($result->num_rows > 0){
-            while($row = $result->fetch_assoc()){
-                $list = $row['p_name'];
+        if($isLoggedIn){
+            $html .= <<< PAGE
+                <a href="favorites_update.php?action=addMedia&id=$media_id">Favorites</a>
+            PAGE;
 
-                $html .= <<< OPTION
-                <a href="playlist_update.php?action=addMedia&list=$list&id=$media_id">$list</a>
-                OPTION;
+            $sql = "SELECT * FROM Playlists WHERE `user_id`='$current_user_id'";
+            $result = $conn->query($sql);
+            if($result->num_rows > 0){
+                while($row = $result->fetch_assoc()){
+                    $list = $row['p_name'];
+
+                    $html .= <<< OPTION
+                    <a href="playlist_update.php?action=addMedia&list=$list&id=$media_id">$list</a>
+                    OPTION;
+                }
             }
+        } else {
+            $html .= <<< PAGE
+                <a href="login.php">Log in to add to playlists</a>
+            PAGE;
         }
 
         //diplays comments in hierarchial order
