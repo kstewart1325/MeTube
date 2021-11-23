@@ -25,8 +25,11 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
     $keywords = $_POST['keywords'];
     
     //checks if values are empty or invalid, ask them to resubmit if not
-    if(!is_uploaded_file($file) || empty($title) || $category==="blank" || empty($desc) || empty($keywords)){
+    if(empty($title) || $category==="blank" || empty($desc) || empty($keywords)){
       $error_message = "<br>Some fields left blank. Please fill out entire form.<br>";
+      $resubmit = true;
+    } else if(!is_uploaded_file($file)){
+      $error_message = "<br>Issue with uploaded media. Please review file.<br>";
       $resubmit = true;
     }
 
@@ -98,7 +101,8 @@ $html = <<< PAGE
     <form enctype="multipart/form-data" action="upload.php" method="post">
         <fieldset>
           <legend>MeTube Media Upload</legend>
-          <input type="hidden" name="MAX_FILE_SIZE" value="4000000000" />
+          <p>Max file size is 2MB</p>
+          <input type="hidden" name="MAX_FILE_SIZE" value="2000000" />
       <p>
         <label for="mediafile">File: </label>
         <input type="file" accepts=".jpeg, .gif, .png, .jpg, .mp3, .mp4, .wma" id="mediafile" name="mediafile" /><br />

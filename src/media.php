@@ -70,7 +70,7 @@ function getMediaPage($media_id, $msg){
         if(in_array($media_type, $imageTypes)){
             $html .= "<img height=\"445\" src=\"$media\" alt=\"$media_title\">";
         } else if(in_array($media_type, $videoTypes)){
-            $html .= "<video width=\"65%\" height=\"440\" autoplay>";
+            $html .= "<video width=\"65%\" height=\"440\" controls>";
             $html .= "<source src=\"$media\" type=\"$media_type\">";
             $html .= "Your browser doesn't support the video element.</br></video>";
         } else if(in_array($media_type, $audioTypes)){
