@@ -85,7 +85,7 @@ if(!$isLoggedIn){
 } else {
     $user_id = $_SESSION['user_id'];
     $html .= <<< PAGE
-    <a class="link" href="index.php?page=channel&id=$user_id">Account</a>
+    <a class="link" href="index.php?page=channel&id=$user_id">Channel</a>
     <a class="link" href="upload.php">Upload</a>
     <a class="link" href="index.php?page=playlists&list=all">Playlists</a>
     <a class="link" href="index.php?page=mailbox">Mail</a>

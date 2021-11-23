@@ -19,6 +19,7 @@
         $sender = $current_user_id;
         $username = $_POST['username'];
         $message = $_POST['message'];
+        $userid = 0;
         $id = 0;
 
         if(empty($username) || empty($message)){
@@ -32,7 +33,7 @@
             //validates the entered username
             if($result->num_rows > 0){
                 $row = $result->fetch_assoc();
-                $contact = $row['user_id'];
+                $userid = $row['user_id'];
             }else{
                 $error_message = "<br>The username <i>$username</i> is invalid. Please try again. <br>";
                 $resubmit = true;
@@ -41,14 +42,8 @@
 
         if($resubmit === false){
             //check if the conversation has already been started
-            $sql = "SELECT Messages.Conversation_ID 
-            FROM (
-                Messages 
-                INNER JOIN Account ON Messages.Receiver_ID = Account.user_id
-                )
-                WHERE Account.username = \"$username\"
-                LIMIT 1";
-
+            $sql = "SELECT Conversation_ID FROM Messages WHERE (Sender_ID = '$userid' AND Receiver_ID = '$current_user_id') OR (Receiver_ID = '$userid' AND Sender_ID = '$current_user_id') ";
+            
             $result = $conn->query($sql);
 
             if($result->num_rows > 0){
