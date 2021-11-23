@@ -16,7 +16,7 @@ function getHomePage(){
      PAGE;
 
      //sorts and displays media uploaded by current user and sorted by date
-     $sql = "SELECT * FROM Mediafiles ORDER BY date_created DESC";
+     $sql = "SELECT * FROM Mediafiles ORDER BY date_created DESC LIMIT 0 , 8";
      $result = $conn->query($sql);
      if($result->num_rows > 0){
           while($row = $result->fetch_assoc()){

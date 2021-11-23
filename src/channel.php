@@ -72,13 +72,13 @@ function getChannelPage($user_id, $msg){
      $html .= <<< PAGE
           </div>
      </div>
-     <div class="home">
+     <div class="channel">
        <div style="float: left" class="row">
             <h3>Uploads</h3>
      PAGE;
 
      //sorts and displays media uploaded by current user and sorted by date
-     $sql = "SELECT * FROM Mediafiles WHERE `user_id`=\"$user_id\" ORDER BY date_created DESC";
+     $sql = "SELECT * FROM Mediafiles WHERE `user_id`=\"$user_id\" ORDER BY date_created DESC LIMIT 0 , 8";
      $result = $conn->query($sql);
      if($result->num_rows > 0){
           while($row = $result->fetch_assoc()){
@@ -95,19 +95,51 @@ function getChannelPage($user_id, $msg){
                MEDIA;
           }
      } else {
-          $html .= "<div class=\"media\" style=\"border: 0px\"></div>";
+          $html .= "<div class=\"media\" style=\"border: 0px\"><h4>No uploads.</h4></div>";
      }
 
      $html .= <<< PAGE
        </div>
-       <div style="float: left" class="row">
-            <h3>Favorites </h3>
-            <img class="media" src="../media/image-placeholder.png" alt="Image Placeholder">
-            <img class="media" src="../media/video-placeholder.png" alt="Video Placeholder">
-            <img class="media" src="../media/video-placeholder.png" alt="Video Placeholder">
-       </div>
-    </div>
-    PAGE;
+     PAGE;
+
+     if($isLoggedIn && $current_user_id === $user_id){
+          $html .= <<< PAGE
+          <div style="float: left" class="row">
+               <a href="index.php?page=playlists&list=favorites"><h3>Favorites </h3></a>
+          PAGE;
+
+          //sorts and displays favorites playlist
+          $sql = "SELECT Mediafiles.media_id, `description` , `media_title` FROM Mediafiles
+          INNER JOIN Favorites ON Mediafiles.media_id = Favorites.media_id
+          WHERE Favorites.user_id='$current_user_id'
+          LIMIT 0 , 8";
+          $result = $conn->query($sql);
+          if($result->num_rows > 0){
+               while($row = $result->fetch_assoc()){
+                    $title = $row['media_title'];
+                    $desc = $row['description'];
+                    $media_id = $row['media_id'];
+
+                    $html .= <<< MEDIA
+                    <a href="index.php?page=media&id=$media_id">
+                    <div class="media">
+                         <h4>$title</h4>
+                         <p>$desc</p>
+                    </div></a>
+                    MEDIA;
+               }
+          } else {
+               $html .= "<div class=\"media\" style=\"border: 0px\"><h4>No media saved to Favorites.</h4></div>";
+          }
+
+          $html .= <<< PAGE
+          </div>
+          PAGE;
+     }
+
+     $html .= <<< PAGE
+     </div>
+     PAGE;
 
     closeCon($conn);
     return $html;

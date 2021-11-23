@@ -24,10 +24,17 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
     $email = $_POST['email'];
     $birthday = $_POST['birthday'];
     $password = $_POST['password'];
+    $confirmpassword = $_POST['confirm_password'];
 
     //checks if values are empty, ask them to resubmit if not
-    if(empty($firstname) || empty($lastname) || empty($username) || empty($email) || empty($birthday) || empty($password)){
+    if(empty($firstname) || empty($lastname) || empty($username) || empty($email) || empty($birthday) || empty($password) || empty($confirmpassword)){
         $error_message = "<br>Some fields left blank. Please fill out entire form.<br>";
+        $resubmit = true;
+    }
+
+    //check that password and confirm password match
+    if($password !== $confirmpassword){
+        $error_message = "<br>Passwords do not match. Please try again.<br>";
         $resubmit = true;
     }
 
@@ -69,13 +76,14 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
         }
 
         $sql = "INSERT INTO Account VALUES 
-        ('$id', '$firstname', '$lastname', '$username', '$email', CURRENT_TIMESTAMP, '$birthday', '$password', 0)";
+        ('$id', '$firstname', '$lastname', '$username', '$email', CURRENT_TIMESTAMP, '$birthday', '$password', '0')";
+
         $result = $conn->query($sql);
 
         if ($result === TRUE) {
             header('Location: '. $url . $path . 'login.php');
         } else {
-            $echo("Error: " . $sql . "<br>" . $conn->error);
+            echo("Error: " . $sql . "<br>" . $conn->error);
         }
     }
 
@@ -117,6 +125,10 @@ $html = <<< PAGE
           <p>
             <label for="password">Password: </label>
             <input type="text" id="password" name="password" /><br />
+          </p>
+          <p>
+          <label for="confirm_password">Confirm Password: </label>
+          <input type="text" id="confirm_password" name="confirm_password" /><br />
           </p>
           <p><input type="submit" value="Send" /> <input type="reset" /></p>
         </fieldset>
