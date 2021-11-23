@@ -7,6 +7,8 @@ include 'media.php';
 include 'search.php';
 include 'playlists.php';
 include 'contacts.php';
+include 'browse.php';
+include 'mailbox.php';
 
 $path = "MeTube/src/";
 $url = "http://localhost:8070/";
@@ -46,6 +48,10 @@ if($_SERVER['REQUEST_METHOD']=="GET"){
     if(isset($_GET['list'])){
         $list = $_GET['list'];
     }
+
+    if(isset($_GET['cat'])){
+        $cat = $_GET['cat'];
+    }
 }
 
 if($_SERVER['REQUEST_METHOD']=="POST"){
@@ -75,15 +81,17 @@ $html = <<< PAGE
 PAGE;
 
 if(!$isLoggedIn){
+    $html .= "<a class=\"link\" href=\"index.php?page=browse&cat=all\">Browse</a>";
     $html .= "<a class=\"link\" href=\"login.php\">Log-in</a>";
 
 } else {
     $user_id = $_SESSION['user_id'];
     $html .= <<< PAGE
+    <a class="link" href="index.php?page=browse&cat=all">Browse</a>
     <a class="link" href="index.php?page=channel&id=$user_id">Account</a>
     <a class="link" href="upload.php">Upload</a>
     <a class="link" href="index.php?page=playlists&list=all">Playlists</a>
-    <a class="link" href="">Mail</a>
+    <a class="link" href="index.php?page=mailbox">Mail</a>
     <a class="link" href="index.php?page=contacts">Contacts</a>
     <a class="link" href="profile_update.php">Settings</a>
     <a class="link" href="index.php?page=logout">Log-out</a>
@@ -111,11 +119,11 @@ if($currentPage === "home"){
 }else if($currentPage === "playlists"){
     $html .= getPlaylists($list, $msg);
 }else if($currentPage === "contacts"){
-    // $html .= "<i>$currentMsg</i><br>";
-    // $html .= $contacts_html;
-}else if($currentPage === "favorites"){
-    // $html .= "<i>$currentMsg</i><br>";
-    // $html .= $fav_html;
+    $html .= getContactsPage($msg);
+}else if($currentPage === "browse"){
+    $html .= getBrowse($cat);
+}else if($currentPage === "mailbox"){
+    $html .= getMailbox($msg);
 }
 
 
