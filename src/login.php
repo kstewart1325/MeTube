@@ -5,7 +5,7 @@ $url = "http://localhost:8070/";
 
 if(!session_id()) session_start();
   
-include 'db_connection.php';
+include_once 'db_connection.php';
 $conn = OpenCon();
 
 $resubmit = false;
