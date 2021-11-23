@@ -16,36 +16,45 @@ $resubmit = false;
 $error_message = "";
 
 if($_SERVER['REQUEST_METHOD']=="POST"){
-    //stores data from form
-    $comment = $_POST['comment'];
 
-    //checks if values are empty, ask them to resubmit if not
-    if(empty($comment)){
-        $error_message = "<br>Field left blank.<br>";
-        $resubmit = true;
-    }
+    if(!$isLoggedIn){
+        $error_message = "Please sign in to leave a comment.";
+        header('Location: '. $url . $path . 'index.php?page=media&id=' . $media_id . "&msg=comlog");
+    }else{
+        //stores data from form
+        $comment = $_POST['comment'];
 
-    if($resubmit === false){
-        //calculates appropriate comment_id
-        $id = 0;
-        $sql = "SELECT MAX(comment_id) AS id FROM Comment";
-        $result = $conn->query($sql);
-        if($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $id = $row["id"] + 1;
+        //checks if values are empty, ask them to resubmit if not
+        if(empty($comment)){
+            $error_message = "<br>Field left blank.<br>";
+            $resubmit = true;
         }
 
-        $sql = "INSERT INTO Comment VALUES ('$id', '$current_user_id', '$media_id', CURRENT_TIMESTAMP, '0', '1', '" . $comment . "')";
-        $result = $conn->query($sql);
-
-        if($result === true){
-            header('Location: '. $url . $path . 'index.php?page=media&id=' . $media_id);
+        if($resubmit === false){
+            //calculates appropriate comment_id
+            $id = 0;
+            $sql = "SELECT MAX(comment_id) AS id FROM Comment";
+            $result = $conn->query($sql);
+            if($result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                $id = $row["id"] + 1;
+            }
+    
+            $sql = "INSERT INTO Comment VALUES ('$id', '$current_user_id', '$media_id', CURRENT_TIMESTAMP, '0', '1', '" . $comment . "')";
+            $result = $conn->query($sql);
+    
+            if($result === true){
+                header('Location: '. $url . $path . 'index.php?page=media&id=' . $media_id);
+            } else {
+                header('Location: '. $url . $path . 'index.php?page=media&id=' . $media_id . "&msg=comerr");
+            }
         } else {
-            header('Location: '. $url . $path . 'index.php?page=media&id=' . $media_id . "&msg=comerr");
+            header('Location: '. $url . $path . 'index.php?page=media&id=' . $media_id . "&msg=nocom");
         }
-    } else {
-        header('Location: '. $url . $path . 'index.php?page=media&id=' . $media_id . "&msg=nocom");
     }
+    
+
+    
 }
 
 CloseCon($conn);

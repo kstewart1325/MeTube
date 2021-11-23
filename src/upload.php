@@ -14,14 +14,16 @@ $allowedExtensions = array("jpg", "jpeg", "gif", "png", "mp3", "mp4", "wma");
 $allowedTypes = array("image/jpeg", "image/pjpeg", "image/png", "image/gif", "audio/mp3", "video/mp4", "audio/wma");
 
 if($_SERVER['REQUEST_METHOD']=="POST"){
-  //stores data from form
-  $file = $_FILES['mediafile']['tmp_name'];
-  $title = $_POST['title'];
-  $category = $_POST['category'];
-  $desc = $_POST['description'];
-  $keywords = $_POST['keywords'];
+  
 
   if(isset($_POST['upload'])){
+    //stores data from form
+    $file = $_FILES['mediafile']['tmp_name'];
+    $title = $_POST['title'];
+    $category = $_POST['category'];
+    $desc = $_POST['description'];
+    $keywords = $_POST['keywords'];
+    
     //checks if values are empty or invalid, ask them to resubmit if not
     if(!is_uploaded_file($file) || empty($title) || $category==="blank" || empty($desc) || empty($keywords)){
       $error_message = "<br>Some fields left blank. Please fill out entire form.<br>";
