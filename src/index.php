@@ -69,7 +69,7 @@ $html = <<< PAGE
 <body>
     <div class="header">
         <div class="header-left">
-            <a href="" class="logo">MeTube</a>
+            <a href="index.php?page=home" class="logo">MeTube</a>
         </div>
         <div class="header-middle">
         <form class="form-inline" method="GET" action="index.php">
@@ -77,17 +77,14 @@ $html = <<< PAGE
         </form>
         </div>
         <div class="header-right">
-        <a class="active" class="link" style="margin-right: 2px" href="index.php?page=home">Home</a>
+        <a class="active" href="index.php?page=browse&cat=all">Browse</a>
 PAGE;
 
 if(!$isLoggedIn){
-    $html .= "<a class=\"link\" href=\"index.php?page=browse&cat=all\">Browse</a>";
     $html .= "<a class=\"link\" href=\"login.php\">Log-in</a>";
-
 } else {
     $user_id = $_SESSION['user_id'];
     $html .= <<< PAGE
-    <a class="link" href="index.php?page=browse&cat=all">Browse</a>
     <a class="link" href="index.php?page=channel&id=$user_id">Account</a>
     <a class="link" href="upload.php">Upload</a>
     <a class="link" href="index.php?page=playlists&list=all">Playlists</a>
