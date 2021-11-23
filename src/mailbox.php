@@ -74,6 +74,7 @@ function getMailbox($msg){
             // new message
             }else if($box === 'new'){
                 $html .= <<< PAGE
+                <p><a href="index.php?page=mailbox">Return to Inbox</a></p>
                 <form method="post" name="new_message" id="new_message" action="mailbox_update.php">
                     <fieldset>
                     <p>$msg</p>
@@ -107,11 +108,10 @@ function getMailbox($msg){
 
               $result = $conn->query($sql);
 
-              $html .= "<p><a href=\"index.php?page=mailbox\">Return to Inbox</a></p>";
-
               if ($result->num_rows > 0) {
-                  $html .= "<table><tr><th>From</th><th>Message</th><th>Time</th></tr>";
-                  $receiver;
+                  $html .= "<p><a href=\"index.php?page=mailbox\">Return to Inbox</a></p>
+                          <table><tr><th>From</th><th>Message</th><th>Time</th></tr>";
+                  $receiver = 0;
                   // output data of each row
                   while($row = $result->fetch_assoc()) {
                     
@@ -129,7 +129,9 @@ function getMailbox($msg){
                   }
                   
                   $html .= "</table><br>";
-                  $html .= "<a href=\"/MeTube/src/index.php?page=mailbox&reply=$receiver\">Reply</a>";
+                  if($receiver !== 0){
+                      $html .= "<a href=\"/MeTube/src/index.php?page=mailbox&reply=$receiver\">Reply</a>";
+                  }
               }else {
                 $html .= "You have no messages.";
               }
