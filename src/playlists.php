@@ -111,7 +111,7 @@ function getPlaylists($list, $msg){
                         <p>$desc</p>
                         <div class="media-buttons">
                             <a href="index.php?page=media&id=$media_id">View</a>
-                            <a href="favorites_update.php?id=$media_id">Remove</a>
+                            <a href="favorites_update.php?action=removeMedia&id=$media_id">Remove</a>
                         </div>
                     </div>
                     MEDIA;
@@ -153,7 +153,7 @@ function getPlaylists($list, $msg){
                     <p>$desc</p>
                     <div class="media-buttons">
                         <a href="index.php?page=media&id=$media_id">View</a>
-                        <a href="platlist_update.php?action=removeMedia&list=$list&id=$media_id">Remove</a>
+                        <a href="playlist_update.php?action=removeMedia&list=$list&id=$media_id">Remove</a>
                     </div>
                  </div>
                  MEDIA;

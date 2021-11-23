@@ -132,8 +132,14 @@ if($_SERVER['REQUEST_METHOD']=="GET"){
         FORM;
         
     } else if($action === "removeMedia"){
+        //gets list id
+        $sql = "SELECT `list_id` FROM Playlists WHERE `p_name`='$list'";
+        $result = $conn->query($sql);
+        $row = $result->fetch_assoc();
+        $list_id = $row['list_id'];
+
         // Removes media from playlist data
-        $sql = "DELETE FROM Playlist_Data WHERE media_id=\"$id\" AND user_id=\"$session_user\"";
+        $sql = "DELETE FROM Playlist_Data WHERE media_id='$id' AND `list_id`='$list_id'";
         $result = $conn->query($sql);
     
         if ($result === TRUE) {
@@ -146,29 +152,40 @@ if($_SERVER['REQUEST_METHOD']=="GET"){
     
     } else if($action === "addMedia"){
         // Adds media to playlist
-        //calculates appropriate id for a unique value (to allow deletions)
-        $eid = 0;
-        $sql = "SELECT MAX(entry_num) AS id FROM Playlist_Data";
+
+        //checks if media is already in playlist
+        $sql = "SELECT `media_id` FROM Playlist_Data
+        INNER JOIN Playlists ON Playlist_Data.list_id = Playlists.list_id
+        WHERE Playlists.p_name='$list'";
         $result = $conn->query($sql);
-        if($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $eid = $row["id"] + 1;
-        }
-    
-        // gets playlist id
-        $sql = "SELECT `list_id` FROM Playlists WHERE `p_name`='$list'";
-        $result = $conn->query($sql);
-        $row = $result->fetch_assoc();
-        $list_id = $row['list_id'];
-        
-        // add info to 'Playlist_Data' table
-        $sql2 = "INSERT INTO Playlist_Data VALUES ('$list_id', '$id', '$eid')";
-        $result2 = $conn->query($sql2);
-    
-        if ($result2 === TRUE) {
-            $msg = "Media successfully added to <i>$list</i>.";        
+       
+        if($result->num_rows > 0){
+            $msg = "Media already in <i>$list</i>";
         } else {
-            $msg = "Error adding media to <i>$list</i>.";
+             //calculates appropriate id for a unique value (to allow deletions)
+            $eid = 0;
+            $sql = "SELECT MAX(entry_num) AS id FROM Playlist_Data";
+            $result = $conn->query($sql);
+            if($result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                $eid = $row["id"] + 1;
+            }
+        
+            // gets playlist id
+            $sql = "SELECT `list_id` FROM Playlists WHERE `p_name`='$list'";
+            $result = $conn->query($sql);
+            $row = $result->fetch_assoc();
+            $list_id = $row['list_id'];
+            
+            // add info to 'Playlist_Data' table
+            $sql2 = "INSERT INTO Playlist_Data VALUES ('$list_id', '$id', '$eid')";
+            $result2 = $conn->query($sql2);
+        
+            if ($result2 === TRUE) {
+                $msg = "Media successfully added to <i>$list</i>.";        
+            } else {
+                $msg = "Error adding media to <i>$list</i>.";
+            }
         }
     
         header('Location: '. $url . $path . 'index.php?page=playlists&list=' . $list . '&msg=' . $msg);

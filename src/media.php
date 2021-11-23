@@ -123,13 +123,30 @@ function getMediaPage($media_id, $msg){
             </div>
             <div style="float: right" class="data-right">
                 <a href="$media_path" download>Download</a>
-                <a href="">Add to Playlist</a>
-            </div>
-        </div>
+                <div class="dropdown">
+                    <button class="dropbtn">Add to Playlist</button>
+                    <div class="dropdown-content">
+                        <a href="favorites_update.php?action=addMedia&id=$media_id">Favorites</a>
         DATA;        
+
+        $sql = "SELECT * FROM Playlists WHERE `user_id`='$current_user_id'";
+        $result = $conn->query($sql);
+        if($result->num_rows > 0){
+            while($row = $result->fetch_assoc()){
+                $list = $row['p_name'];
+
+                $html .= <<< OPTION
+                <a href="playlist_update.php?action=addMedia&list=$list&id=$media_id">$list</a>
+                OPTION;
+            }
+        }
 
         //diplays comments in hierarchial order
         $html .= <<< COMMENTS
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="comments">
         <form style="width: 72.5%; margin-left: 15%;" action="comments.php" method="post">
             <fieldset>
