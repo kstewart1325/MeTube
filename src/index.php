@@ -8,6 +8,7 @@ include 'search.php';
 include 'playlists.php';
 include 'contacts.php';
 include 'browse.php';
+include 'mailbox.php';
 
 $path = "MeTube/src/";
 $url = "http://localhost:8070/";
@@ -90,7 +91,7 @@ if(!$isLoggedIn){
     <a class="link" href="index.php?page=channel&id=$user_id">Account</a>
     <a class="link" href="upload.php">Upload</a>
     <a class="link" href="index.php?page=playlists&list=all">Playlists</a>
-    <a class="link" href="">Mail</a>
+    <a class="link" href="index.php?page=mailbox">Mail</a>
     <a class="link" href="index.php?page=contacts">Contacts</a>
     <a class="link" href="profile_update.php">Settings</a>
     <a class="link" href="index.php?page=logout">Log-out</a>
@@ -121,6 +122,8 @@ if($currentPage === "home"){
     $html .= getContactsPage($msg);
 }else if($currentPage === "browse"){
     $html .= getBrowse($cat);
+}else if($currentPage === "mailbox"){
+    $html .= getMailbox($msg);
 }
 
 
